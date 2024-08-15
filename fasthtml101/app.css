@@ -7,3 +7,7 @@
 #loader.htmx-request {
   display: block;
 }
+
+#users{
+  margin-top:1rem;
+}

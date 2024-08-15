@@ -1,6 +1,7 @@
 from fasthtml.common import *
 import requests
-    
+user_objects = []    
+
 app = FastHTML()
 
 def pico_css_link():
@@ -17,28 +18,15 @@ def css():
 
 @app.get("/")
 def home():
-    return Html(Head(Title("FastHTML101"),pico_css_link(),app_css_link()),Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container")))
+    return Html(Head(Title("FastHTML101"),pico_css_link(),app_css_link()),init_body())
 
 @app.get("/users")
 def users():
-    requests.packages.urllib3.disable_warnings()
-    response = requests.get("http://jsonplaceholder.typicode.com/users")
-    user_objects = []
-    if response.status_code == 200: 
-        users = response.json()
-        for user_data in users:
-            user = User(
-                id=user_data['id'],
-                name=user_data['name'],
-                username=user_data['username'],
-                email=user_data['email'],
-                phone=user_data['phone'],
-                website=user_data['website']
-            )
-            user_objects.append(user)
-     # Process the users data here else: print("Error:", response.status_code)import requests
-    return Table(users_table_thead(),users_table_tbody(user_objects),id="users")
+    populate_users()
+    return Div(search_input(),Table(users_table_thead(),users_table_tbody(user_objects)),id="users")
 
+def init_body():
+    return Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container"))
 
 def fetch_users_button():
     return Button("Fetch Users",hx_get="/users",hx_target="#users",hx_swap="outerHTML",hx_indicator="#loader")
@@ -53,8 +41,29 @@ def users_table_row(user:dict):
     return Tr(Td(user.name),Td(user.username),Td(user.email),Td(user.phone),Td(user.website))
 
 def loader():
-    return Div("",id="loader",aria_busy="true")
-# write a python class
+    return Div("",id="loader",aria_busy="true",cls="container")
+
+def search_input():
+    return Input("",type="text",name="search",placeholder="Search...")
+
+def populate_users():
+     # requests.packages.urllib3.disable_warnings()
+    response = requests.get("https://jsonplaceholder.typicode.com/users")
+    if len(user_objects)>0:
+        user_objects.clear()
+    if response.status_code == 200: 
+        users = response.json()
+        for user_data in users:
+            user = User(
+                id=user_data['id'],
+                name=user_data['name'],
+                username=user_data['username'],
+                email=user_data['email'],
+                phone=user_data['phone'],
+                website=user_data['website']
+            )
+            user_objects.append(user)
+
 class User:
     def __init__(self,id, name, username, email, phone, website):
         self.id=id
