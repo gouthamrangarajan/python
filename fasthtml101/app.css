@@ -1,0 +1,9 @@
+#loader {
+  display: none;
+  position: fixed;
+  width: 100%;
+}
+
+#loader.htmx-request {
+  display: block;
+}
