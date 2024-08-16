@@ -24,3 +24,12 @@
     transform:translateY(0);
   }
 }
+th{
+  position:relative;
+  cursor: pointer;
+}
+th i{
+  position:absolute;
+  top:0.25rem;
+  right:0.25rem;
+}

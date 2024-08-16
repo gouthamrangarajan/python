@@ -2,7 +2,7 @@ from fasthtml.common import *
 from users_data import *
 
 app = FastHTML()
-
+user_table_sort=('name','asc')
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
 def pico_colors_link():
@@ -11,6 +11,8 @@ def htmx_script_tag():
     return Script("",src="https://unpkg.com/htmx.org@2.0.2",integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ",crossorigin="anonymous")
 def app_css_link():
     return Link("",rel="stylesheet",href="/app.css")
+def material_icons_link():
+    return Link("",rel="stylesheet",href="https://fonts.googleapis.com/icon?family=Material+Icons")
 
 @app.get("/app.css")
 def css():
@@ -19,12 +21,12 @@ def css():
 
 @app.get("/")
 def home():
-    return Html(Head(Title("FastHTML101"),pico_css_link(),pico_colors_link(),app_css_link()),init_body())
+    return Html(Head(Title("FastHTML101"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),init_body())
 
 @app.get("/users")
 def users():
     populate_users()
-    return Div(search_input(),Table(users_table_thead(),users_table_tbody(user_objects)),id="users",cls="overflow-auto")
+    return Div(search_input(),Table(users_table_thead(),users_table_tbody(user_objects),id="users_table"),id="users",cls="overflow-auto")
 
 @app.post('/search')
 def users_search(search:str):
@@ -33,23 +35,48 @@ def users_search(search:str):
     fted_users=[user for user in user_objects if check_user(user,search)]
     return users_table_tbody(fted_users)
 
+@app.post('/sort/{sort_key}/{direction}')
+def sort(sort_key:str,direction:str):
+    users=user_objects
+    if(direction=='desc'):
+        users=sorted(users,key=lambda x:x[sort_key],reverse=True)
+    else:
+        users=sorted(users,key=lambda x:x[sort_key])        
+    global user_table_sort
+    user_table_sort=(sort_key,direction)    
+    return Table(users_table_thead(),users_table_tbody(users),id="users_table")
+
 def init_body():
     return Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container"))
 
 def fetch_users_button():
     return Button("Fetch Users",hx_get="/users",hx_target="#users",hx_swap="outerHTML",hx_indicator="#loader")
 
-def users_table_thead():
-    return Thead(Tr(Th("Name"),Th("UserName"),Th("Email"),Th("Website")))
+def users_table_thead():   
+    return Thead(Tr(users_table_thead_th("name","Name"),users_table_thead_th("username","UserName"),users_table_thead_th("email","Email"),users_table_thead_th("website","Website")),id="users_thead")
+    
+def users_table_thead_th(key:str,heading:str):
+    if(user_table_sort[0]==key):
+        if(user_table_sort[1]=="asc"):
+            return Th(heading,asc_sort_icon(),hx_post=f"/sort/{key}/desc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
+        else:
+            return Th(heading,desc_sort_icon(),hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
+    return Th(heading,hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
 
 def users_table_tbody(users:list):
     return Tbody(*[users_table_row(user) for user in users],id="users_tbody")
 
 def users_table_row(user:dict):
-    return Tr(Td(user.name),Td(user.username),Td(user.email),Td(user.website),cls="animate-slide-down")
+    return Tr(Td(user['name']),Td(user['username']),Td(user['email']),Td(user['website']),cls="animate-slide-down")
 
 def loader():
     return Div("",id="loader",aria_busy="true",cls="container")
 
 def search_input():
     return Input("",type="search",name="search",placeholder="Search...",hx_post="/search",hx_trigger="input changed delay:500ms, search",hx_target="#users_tbody",hx_indicator="#loader",hx_swap="outerHTML")
+
+def asc_sort_icon():
+    return I("keyboard_arrow_up",cls="material-icons mt-2")
+
+def desc_sort_icon():
+    return I("keyboard_arrow_down",cls="material-icons mt-2")
