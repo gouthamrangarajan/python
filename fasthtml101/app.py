@@ -60,6 +60,8 @@ def check_user(user:dict,search:str):
         return True
     elif user.email.lower().find(search.lower())!=-1:
         return True
+    elif user.website.lower().find(search.lower())!=-1:
+        return True
     return False
     
 def populate_users():
