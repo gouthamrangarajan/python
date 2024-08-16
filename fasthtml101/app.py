@@ -1,13 +1,14 @@
 from fasthtml.common import *
-import requests
-user_objects = []    
+from users_data import *
 
 app = FastHTML()
 
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
+def pico_colors_link():
+    return Link("",rel="stylesheet" ,href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css")
 def htmx_script_tag():
-    return Script("",src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js",integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr",crossorigin="anonymous")
+    return Script("",src="https://unpkg.com/htmx.org@2.0.2",integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ",crossorigin="anonymous")
 def app_css_link():
     return Link("",rel="stylesheet",href="/app.css")
 
@@ -18,7 +19,7 @@ def css():
 
 @app.get("/")
 def home():
-    return Html(Head(Title("FastHTML101"),pico_css_link(),app_css_link()),init_body())
+    return Html(Head(Title("FastHTML101"),pico_css_link(),pico_colors_link(),app_css_link()),init_body())
 
 @app.get("/users")
 def users():
@@ -52,41 +53,3 @@ def loader():
 
 def search_input():
     return Input("",type="search",name="search",placeholder="Search...",hx_post="/search",hx_trigger="input changed delay:500ms, search",hx_target="#users_tbody",hx_indicator="#loader",hx_swap="outerHTML")
-
-def check_user(user:dict,search:str):           
-    if user.name.lower().find(search.lower())!=-1:
-        return True
-    elif user.username.lower().find(search.lower())!=-1:
-        return True
-    elif user.email.lower().find(search.lower())!=-1:
-        return True
-    elif user.website.lower().find(search.lower())!=-1:
-        return True
-    return False
-    
-def populate_users():
-     # requests.packages.urllib3.disable_warnings()
-    response = requests.get("https://jsonplaceholder.typicode.com/users")
-    if len(user_objects)>0:
-        user_objects.clear()
-    if response.status_code == 200: 
-        users = response.json()
-        for user_data in users:
-            user = User(
-                id=user_data['id'],
-                name=user_data['name'],
-                username=user_data['username'],
-                email=user_data['email'],
-                phone=user_data['phone'],
-                website=user_data['website']
-            )
-            user_objects.append(user)
-
-class User:
-    def __init__(self,id, name, username, email, phone, website):
-        self.id=id
-        self.name = name
-        self.username = username
-        self.email = email
-        self.phone = phone
-        self.website = website
