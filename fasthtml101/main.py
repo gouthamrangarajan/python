@@ -58,9 +58,9 @@ def users_table_thead(sort_key:str,sort_direction:str):
 def users_table_thead_th(key:str,heading:str,sort_key:str,sort_direction:str):
     if(sort_key==key):
         if(sort_direction=="asc"):
-            return Th(heading,asc_sort_icon(),hx_post=f"/sort/{key}/desc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
+            return Th(heading,asc_sort_icon(),hx_post=f"/sort/{key}/desc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML",hx_indicator="#loader")
         else:
-            return Th(heading,desc_sort_icon(),hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
+            return Th(heading,desc_sort_icon(),hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML",hx_indicator="#loader")
     return Th(heading,hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
 
 def users_table_tbody(users:list):
