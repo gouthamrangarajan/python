@@ -27,14 +27,14 @@ def home():
 @app.get("/users")
 def users():
     populate_users()
-    return Div(search_input(),Table(users_table_thead("",""),users_table_tbody(user_objects),id="users_table"),id="users",cls="overflow-auto")
+    return Div(search_input(False),Div(Table(users_table_thead("",""),users_table_tbody(user_objects)),id="users_table",cls="overflow-auto"),id="users")
 
 @app.post('/search')
 def users_search(search:str):
     if len(user_objects)==0:
         populate_users()
     fted_users=[user for user in user_objects if check_user(user,search)]
-    return users_table_tbody(fted_users)
+    return Div(Table(users_table_thead("",""),users_table_tbody(fted_users)),id="users_table",cls="overflow-auto")
 
 @app.post('/sort/{sort_key}/{direction}')
 def sort(sort_key:str,direction:str):
@@ -44,7 +44,7 @@ def sort(sort_key:str,direction:str):
     else:
         users=sorted(users,key=lambda x:x[sort_key])        
        
-    return Table(users_table_thead(sort_key,direction),users_table_tbody(users),id="users_table")
+    return Div(Table(users_table_thead(sort_key,direction),users_table_tbody(users)),search_input(True),id="users_table",cls="overflow-auto")
 
 def init_body():
     return Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container"))
@@ -72,8 +72,11 @@ def users_table_row(user:dict):
 def loader():
     return Div("",id="loader",aria_busy="true",cls="container")
 
-def search_input():
-    return Input("",type="search",name="search",placeholder="Search...",hx_post="/search",hx_trigger="input changed delay:500ms, search",hx_target="#users_tbody",hx_indicator="#loader",hx_swap="outerHTML")
+def search_input(isOob:bool):
+    if isOob==False:
+        return Input("",id="srchTxt",type="search",name="search",placeholder="Search...",hx_post="/search",hx_trigger="input changed delay:500ms, search",hx_target="#users_table",hx_indicator="#loader",hx_swap="outerHTML")
+    else:
+        return Input("",id="srchTxt",type="search",name="search",placeholder="Search...",hx_post="/search",hx_trigger="input changed delay:500ms, search",hx_target="#users_table",hx_indicator="#loader",hx_swap="outerHTML",hx_swap_oob="true")
 
 def asc_sort_icon():
     return I("keyboard_arrow_up",cls="material-icons mt-2")
