@@ -3,6 +3,7 @@ from users_data import *
 
 app = FastHTML()
 user_table_sort=('name','asc')
+
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
 def pico_colors_link():
@@ -26,7 +27,7 @@ def home():
 @app.get("/users")
 def users():
     populate_users()
-    return Div(search_input(),Table(users_table_thead(),users_table_tbody(user_objects),id="users_table"),id="users",cls="overflow-auto")
+    return Div(search_input(),Table(users_table_thead("",""),users_table_tbody(user_objects),id="users_table"),id="users",cls="overflow-auto")
 
 @app.post('/search')
 def users_search(search:str):
@@ -42,9 +43,8 @@ def sort(sort_key:str,direction:str):
         users=sorted(users,key=lambda x:x[sort_key],reverse=True)
     else:
         users=sorted(users,key=lambda x:x[sort_key])        
-    global user_table_sort
-    user_table_sort=(sort_key,direction)    
-    return Table(users_table_thead(),users_table_tbody(users),id="users_table")
+       
+    return Table(users_table_thead(sort_key,direction),users_table_tbody(users),id="users_table")
 
 def init_body():
     return Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container"))
@@ -52,12 +52,12 @@ def init_body():
 def fetch_users_button():
     return Button("Fetch Users",hx_get="/users",hx_target="#users",hx_swap="outerHTML",hx_indicator="#loader")
 
-def users_table_thead():   
-    return Thead(Tr(users_table_thead_th("name","Name"),users_table_thead_th("username","UserName"),users_table_thead_th("email","Email"),users_table_thead_th("website","Website")),id="users_thead")
+def users_table_thead(sort_key:str,sort_direction:str):   
+    return Thead(Tr(users_table_thead_th("name","Name",sort_key,sort_direction),users_table_thead_th("username","UserName",sort_key,sort_direction),users_table_thead_th("email","Email",sort_key,sort_direction),users_table_thead_th("website","Website",sort_key,sort_direction)),id="users_thead")
     
-def users_table_thead_th(key:str,heading:str):
-    if(user_table_sort[0]==key):
-        if(user_table_sort[1]=="asc"):
+def users_table_thead_th(key:str,heading:str,sort_key:str,sort_direction:str):
+    if(sort_key==key):
+        if(sort_direction=="asc"):
             return Th(heading,asc_sort_icon(),hx_post=f"/sort/{key}/desc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
         else:
             return Th(heading,desc_sort_icon(),hx_post=f"/sort/{key}/asc",hx_trigger="click",hx_target="#users_table",hx_swap="outerHTML")
