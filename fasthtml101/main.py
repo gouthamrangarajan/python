@@ -22,7 +22,7 @@ def css():
 
 @app.get("/")
 def home():
-    return Html(Head(Title("FastHTML101"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),init_body())
+    return Html(Head(Title("FastHTML101"),Meta(name="viewport",content="width=device-width, initial-scale=1.0"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),init_body())
 
 @app.get("/users")
 def users():
