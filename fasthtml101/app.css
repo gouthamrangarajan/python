@@ -11,3 +11,16 @@
 #users{
   margin-top:1rem;
 }
+.animate-slide-down{
+  animation:animate-slide-down 0.3s ease-in-out;
+}
+@keyframes animate-slide-down {
+  from{
+    opacity:0;
+    transform: translateY(-2px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
