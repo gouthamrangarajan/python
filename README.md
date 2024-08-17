@@ -1,3 +1,1 @@
-### python
-$ pip install uvicorn
-uvicorn app:app --reload
+#### a repo to try python projects
