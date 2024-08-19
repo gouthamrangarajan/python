@@ -2,7 +2,6 @@ from fasthtml.common import *
 from users_data import *
 
 app = FastHTML()
-user_table_sort=('name','asc')
 
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
@@ -18,7 +17,9 @@ def material_icons_link():
 @app.get("/app.css")
 def css():
     f=open("./app.css","r")
-    return f.read()
+    data= f.read()
+    f.close()
+    return data
 
 @app.get("/")
 def home():
@@ -27,14 +28,14 @@ def home():
 @app.get("/users")
 def users():
     populate_users()
-    return Div(search_input(False),Div(Table(users_table_thead("",""),users_table_tbody(user_objects)),id="users_table",cls="overflow-auto"),id="users")
+    return search_input(False),Div(Table(users_table_thead("",""),users_table_tbody(user_objects),id="users_table"),cls="overflow-auto")
 
 @app.post('/search')
 def users_search(search:str):
     if len(user_objects)==0:
         populate_users()
     fted_users=[user for user in user_objects if check_user(user,search)]
-    return Div(Table(users_table_thead("",""),users_table_tbody(fted_users)),id="users_table",cls="overflow-auto")
+    return Table(users_table_thead("",""),users_table_tbody(fted_users),id="users_table")
 
 @app.post('/sort/{sort_key}/{direction}')
 def sort(sort_key:str,direction:str):
@@ -44,13 +45,13 @@ def sort(sort_key:str,direction:str):
     else:
         users=sorted(users,key=lambda x:x[sort_key])        
        
-    return Div(Table(users_table_thead(sort_key,direction),users_table_tbody(users)),search_input(True),id="users_table",cls="overflow-auto")
+    return Table(users_table_thead(sort_key,direction),users_table_tbody(users),id="users_table"),search_input(True)
 
 def init_body():
     return Body(Main(H1("Welcome!"),fetch_users_button(),loader(),Div("",id="users"),htmx_script_tag(),cls="container"))
 
 def fetch_users_button():
-    return Button("Fetch Users",hx_get="/users",hx_target="#users",hx_swap="outerHTML",hx_indicator="#loader")
+    return Button("Fetch Users",hx_get="/users",hx_target="#users",hx_swap="innerHTML",hx_indicator="#loader")
 
 def users_table_thead(sort_key:str,sort_direction:str):   
     return Thead(Tr(users_table_thead_th("name","Name",sort_key,sort_direction),users_table_thead_th("username","UserName",sort_key,sort_direction),users_table_thead_th("email","Email",sort_key,sort_direction),users_table_thead_th("website","Website",sort_key,sort_direction)),id="users_thead")
