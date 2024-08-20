@@ -12,7 +12,7 @@ def htmx_script_tag():
 def app_css_link():
     return Link("",rel="stylesheet",href="/app.css")
 def material_icons_link():
-    return Link("",rel="stylesheet",href="https://fonts.googleapis.com/icon?family=Material+Icons")
+    return Link("",rel="preload",href="https://fonts.googleapis.com/icon?family=Material+Icons",onload="this.rel='stylesheet'",_as="style")
 
 @app.get("/app.css")
 def css():
