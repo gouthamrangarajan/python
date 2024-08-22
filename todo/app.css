@@ -34,6 +34,11 @@ input[type="checkbox"] {
     border-radius: 50%;
 }
 
+label:has(input[type="checkbox"]) {
+    word-break: break-all;
+    width: 400px;
+}
+
 label:has(input[type="checkbox"]:checked) {
     text-decoration-line: line-through;
 }

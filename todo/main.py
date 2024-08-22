@@ -26,7 +26,7 @@ def css():
 
 @app.get("/")
 def home():
-    return Html(Head(Title("FastHTML-ToDo"),Meta(name="color-schema",content="light dark"),Meta(name="viewport",content="width=device-width, initial-scale=1.0"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),body(),data_theme="light")
+    return Html(Head(Title("FastHTML-ToDo"),Meta(name="color-schema",content="light dark"),Meta(name="viewport",content="width=device-width, initial-scale=1.0"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),body())
 
 @app.post("/")
 def add_item(item:str):
