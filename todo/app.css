@@ -1,0 +1,55 @@
+main {
+    margin-top: 2rem;
+}
+
+.animate-slide-down {
+    animation: animate-slide-down 0.3s ease-in-out;
+}
+
+@keyframes animate-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+thead>tr>th {
+    text-align: center;
+    font-size: 1.125rem;
+    /* 18px */
+    line-height: 1.75rem;
+    /* 28px */
+}
+
+.container {
+    max-width: 500px;
+}
+
+input[type="checkbox"] {
+    border-radius: 50%;
+}
+
+label:has(input[type="checkbox"]:checked) {
+    text-decoration-line: line-through;
+}
+
+button.delete {
+    padding: 0;
+    position: absolute;
+    top: 0.25rem;
+    right: 0.5rem;
+    border-color: var(--pico-color-red-600);
+}
+
+button.delete:focus {
+    box-shadow: var(--pico-button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--pico-outline-width) var(--pico-color-red-300);
+}
+
+td {
+    position: relative;
+}
