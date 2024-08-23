@@ -1,12 +1,6 @@
 from fasthtml.common import *
 
-app=FastHTML()
-db = database('todos.db')
-if 'Todo' not in db.t: 
-    db.t['Todo'].create(id=int, item=str, done=bool, pk='id')
-    db.t['Todo'].insert(id=1,item='Test Task', done=False)
-Todo = db.t['Todo'].dataclass()
-todos=db.t['Todo']
+app,rt,todos,Todo=fast_app('todo.db',todos=dict(id=int, item=str, done=bool, pk='id'))
 
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
@@ -19,19 +13,19 @@ def app_css_link():
 def material_icons_link():
     return Link("",rel="preload",href="https://fonts.googleapis.com/icon?family=Material+Icons",onload="this.rel='stylesheet'",_as="style")
 
-@app.get("/app.css")
-def css():
+@rt("/app.css")
+def get():
     f=open("./app.css","r")
     data= f.read()
     f.close()
     return data
 
-@app.get("/")
-def home():
+@rt("/")
+def get():
     return Html(Head(Title("FastHTML-ToDo"),Meta(name="color-schema",content="light dark"),Meta(name="viewport",content="width=device-width, initial-scale=1.0"),pico_css_link(),pico_colors_link(),material_icons_link(),app_css_link()),body())
 
-@app.post("/")
-def add_item(item:str):
+@rt("/")
+def post(item:str):
     nextId=1
     if len(todos()) != 0:
         nextId=max([todo.id for todo in todos()])+1    
@@ -39,14 +33,14 @@ def add_item(item:str):
     todos.insert(todo)
     return Tr(Td(Label(done_checkbox(nextId,False),item,delete_button(nextId)),scope="row"),cls="animate-slide-down",id=f'tr_{nextId}')
 
-@app.post("/done/{itemId}")
-def toggle_done(itemId:int):    
+@rt("/done/{itemId}")
+def post(itemId:int):    
     item=next(filter(lambda item:item.id==itemId, todos()))  
     item.done=not item.done
     todos.update(item)  
 
-@app.post("/remove/{itemId}")
-def remove(itemId:int):        
+@rt("/remove/{itemId}")
+def post(itemId:int):        
     todos.delete(itemId)               
 
 def body():
