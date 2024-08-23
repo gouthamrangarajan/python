@@ -1,7 +1,6 @@
 from fasthtml.common import *
-from pathlib import Path
 
-app,rt,todos,Todo=fast_app(f'{Path(__file__).parent}/data/todo.db',todos=dict(id=int, item=str, done=bool, pk='id'))
+app,rt,todos,Todo=fast_app('data/todo.db',todos=dict(id=int, item=str, done=bool, pk='id'))
 
 def pico_css_link():
     return Link("",rel="stylesheet",href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css")
