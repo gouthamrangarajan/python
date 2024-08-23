@@ -2,7 +2,9 @@ from fasthtml.common import *
 
 app=FastHTML()
 db = database('todos.db')
-if 'Todo' not in db.t: db.t['Todo'].create(id=int, item=str, done=bool, pk='id')
+if 'Todo' not in db.t: 
+    db.t['Todo'].create(id=int, item=str, done=bool, pk='id')
+    db.t['Todo'].insert(id=1,item='Test Task', done=False)
 Todo = db.t['Todo'].dataclass()
 todos=db.t['Todo']
 
