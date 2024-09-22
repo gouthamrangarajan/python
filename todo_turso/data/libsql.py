@@ -4,8 +4,8 @@ import libsql_experimental as libsql
 
 load_dotenv()
 
-TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL","libsql://general-gouthamrangarajan.turso.io")
-TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN","eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3MjY3ODg4MjUsImlkIjoiZjQ3MjU0NjItODVjMi00MWQyLWE0YWMtZDkzNjdmODk4ZjMxIn0.5zJf4PcP0qAW2DRHEBH277sSeDxBHdxMrnubb3ByqC_EmK_EGTlDsqZZStraaEofkRtjoSzqTyjnV59aZB-yCg")
+TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
+TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
 
 conn = libsql.connect("general.db", sync_url=TURSO_DATABASE_URL, auth_token=TURSO_AUTH_TOKEN)
 conn.sync()
