@@ -18,7 +18,7 @@ def htmx_script():
 
 def add_input():
     return Input(type="text", placeholder="Add a new task", name="task",id="inp_add",
-                onKeyDown="if(event.key === 'Enter'){ this.dispatchEvent(new Event('add_submit'));this.value='';}",
+                onKeyDown="if(event.key === 'Enter' && this.value.trim()!=''){ this.dispatchEvent(new Event('add_submit'));this.value='';}",
                 hx_trigger="add_submit",hx_post="/", hx_target="#list",hx_swap="beforeend",
                 cls="appearance-none outline-none py-1 px-3 rounded-xl border-2 border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50")
 
