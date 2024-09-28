@@ -60,6 +60,7 @@ def add_task_input():
     return Input(type="text", placeholder="Add a new task", name="task",id="inp_add",
                 onKeyDown="textKeyDown(event,this)",
                 hx_trigger="add_submit",hx_post="/", hx_target="#list",hx_swap="beforeend",
+                hx_on_htmx_after_request="addItemRequestCompleted(this)",
                 cls="appearance-none outline-none py-1 px-3 rounded-xl border-2 border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50")
 
 def container():
@@ -70,10 +71,16 @@ def container():
 def task_completed_checkbox(data):    
     if(data[2]==1):
         return Input(type="checkbox",cls="appearance-none outline-none w-5 h-5 rounded-full border-2 border-slate-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50",
-                     checked=true, hx_trigger="change", hx_post=f"/complete/{data[0]}",hx_target=f'#span_{data[0]}',hx_swap="outerHTML")
+                     checked=true, hx_trigger="change", hx_post=f"/complete/{data[0]}",
+                     hx_target=f'#span_{data[0]}',hx_swap="outerHTML",
+                     hx_on_htmx_before_request="completeItemRequestInProgress(this)",
+                     hx_on_htmx_after_request="completeItemRequestCompleted(this)")
     else:
         return Input(type="checkbox",cls="appearance-none outline-none w-5 h-5 rounded-full border-2 border-slate-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50",
-                     hx_trigger="change", hx_post=f"/complete/{data[0]}",hx_target=f'#span_{data[0]}',hx_swap="outerHTML")
+                     hx_trigger="change", hx_post=f"/complete/{data[0]}",
+                     hx_target=f'#span_{data[0]}',hx_swap="outerHTML",
+                     hx_on_htmx_before_request="completeItemRequestInProgress(this)",
+                     hx_on_htmx_after_request="completeItemRequestCompleted(this)")
     
 def task_label(data):    
     return Label(task_completed_checkbox(data),check_icon_span(data),Span(data[1],cls="flex-1 break-all"),cls="has-[:checked]:line-through flex flex-1 items-center gap-3 relative")
@@ -90,7 +97,9 @@ def check_icon_span(data):
 def remove_button(data):
     return Button(I('delete',cls="material-icons text-xl"),cls="appearance-none outline-none py-1 px-2 rounded border border-red-600 text-red-600 transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50",
                  onClick="removeBtnClick(event,this)",
-                 hx_trigger="remove_submit",hx_post=f'/delete/{data[0]}',hx_target=f'#li_{data[0]}',hx_swap="delete transition:true")
+                 hx_trigger="remove_submit",hx_post=f'/delete/{data[0]}',
+                 hx_target=f'#li_{data[0]}',hx_swap="delete transition:true"
+                )
 
 @rt("/login")
 def get():
