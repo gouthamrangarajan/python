@@ -12,7 +12,8 @@ function addItemRequestCompleted(self) {
 
 function removeBtnClick(_, self) {
     let listElement = self.parentElement;
-    listElement.style.viewTransitionName = 'list';
+    //below code causes console error during slow network and fast remove buttons click
+    // listElement.style.viewTransitionName = 'list'; 
     self.style.opacity = 0;
     let label = listElement.children[0];
     let checkbox = listElement.children[0].children[0];
