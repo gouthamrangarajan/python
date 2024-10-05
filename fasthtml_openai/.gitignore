@@ -1,0 +1,4 @@
+__pycache__
+.sesskey
+node_modules
+.env
