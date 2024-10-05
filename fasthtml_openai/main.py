@@ -30,6 +30,7 @@ def loader_span(cnt:int):
 def loader():
     return Div(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0")
               ,P(loader_span(1),loader_span(2),loader_span(3),cls="flex gap-1")
+              ,style="view-transition-name:loader"
               ,cls="flex gap-2 items-center w-full text-white p-1 htmx-indicator",id="loader")
 def chat_container():
     return Div(
@@ -53,7 +54,7 @@ def li_assistant(val:str=""):
 def form():
     return Form(h1(),chat_container(),form_fields(),hx_trigger="chat_submit",
                 hx_post="/message",hx_target="#list",hx_indicator="#loader",
-                hx_swap="beforeend",hx_on_htmx_before_send="formBeforeSend(event,this)",
+                hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 ")
 def form_fields():
     return Div(
