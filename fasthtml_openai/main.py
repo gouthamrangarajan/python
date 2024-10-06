@@ -83,7 +83,8 @@ def input_field():
     return Textarea(cls="flex-1 resize-none appearance-none bg-transparent outline-none scrollbar-thin scrollbar-track-transparent scrollbar-thumb-red-300 disabled:cursor-not-allowed disabled:opacity-60", name="prompt", placeholder="Send a message", id="txtMessage",rows="2",onKeyDown="keyDown(event,this)")        
 def submit_btn():
     return Button(
-            I("arrow_upward",cls="material-icons"),
+            I("arrow_upward",cls="material-icons",x_show="!$store.processing.value"),
+            Span(loader_span(1),loader_span(2),cls="flex gap-1",x_show="$store.processing.value"),
             type="submit",onClick="submitBtnClick(event,this)",            
             cls="appearance-none outline-none p-1 rounded-full bg-slate-700 text-white transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 focus:ring-1 focus:ring-white")
 def h1():
