@@ -27,6 +27,9 @@ function formBeforeSend(_, self) {
     const scrollEl = document.getElementById('scroll-div');
     scrollEl.scrollTop = scrollEl.scrollHeight;
 }
+function beforeSwap(event, _) {
+    // event.detail.serverResponse = event.detail.serverResponse.replaceAll('</script>', '<\\x3C/script\\x3E>');
+}
 function afterSwap(_, self) {
     Alpine.store('processing').toggle();
 }

@@ -1,6 +1,7 @@
 from fasthtml.common import *
 from fasthtml.components import Zero_md
 from openai_chat import chat
+from mocks.javascript import mock_javascript_val 
 
 app,rt = fast_app()
 app.mount("/assets",StaticFiles(directory="assets"), name="assets")
@@ -64,14 +65,16 @@ def li_assistant(val:str=""):
         return Li(P(val),Input(type="hidden",name="assistant",value=''),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
     
     css_template = Template(Style('.markdown-body {background-color: transparent !important;}'), data_append=True)
-    md_val=Zero_md(css_template, Script(val, type="text/markdown"))
+    md_val=Zero_md(css_template, Script(val.replace("</script>","<\/script>"), type="text/markdown"))
     # md_val=NotStr(f'''<zero-md><script type="text/markdown">{val}</script></zero-md>''')
     return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),P(md_val,cls="overflow-x-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300"),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-start w-full animate-scale-y text-white p-1 origin-top")    
 def form():
     return Form(h1(),chat_container(),form_fields(),hx_trigger="chat_submit",
                 hx_post="/message",hx_target="#list",hx_indicator="#loader",
                 hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
-                hx_on_htmx_response_error="formError(event,this)",hx_on_htmx_after_swap="afterSwap(event,this)",
+                hx_on_htmx_response_error="formError(event,this)",
+                hx_on_htmx_before_swap="beforeSwap(event,this)",
+                hx_on_htmx_after_swap="afterSwap(event,this)",
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 ")
 def form_fields():
     return Div(
@@ -122,75 +125,8 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
         messages.append({"role":"user","content":item})
         if(index+1<len(assistant)):
             messages.append({"role":"assistant","content":assistant[index+1]})    
-    output=await chat(messages) 
-    # output=mock_python_value   
+    # output=await chat(messages) 
+    output=mock_javascript_val   
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
 serve()
-mock_python_value="""Sure! Below is a simple Python script that demonstrates how to create a basic program to manage a to-do list. The program allows users to add, remove, and view tasks.
-
-```python
-class TodoList:
-    def __init__(self):
-        self.tasks = []
-
-    def add_task(self, task):
-        self.tasks.append(task)
-        print(f'Task &quot;{task}&quot; added to the to-do list!')
-
-    def remove_task(self, task):
-        if task in self.tasks:
-            self.tasks.remove(task)
-            print(f'Task &quot;{task}&quot; removed from the to-do list!')
-        else:
-            print(f'Task &quot;{task}&quot; not found in the to-do list!')
-
-    def view_tasks(self):
-        if not self.tasks:
-            print(&quot;Your to-do list is empty.&quot;)
-        else:
-            print(&quot;Your to-do list:&quot;)
-            for index, task in enumerate(self.tasks, start=1):
-                print(f&quot;{index}. {task}&quot;)
-
-def main():
-    todo_list = TodoList()
-    
-    while True:
-        print(&quot;\nOptions:&quot;)
-        print(&quot;1. Add task&quot;)
-        print(&quot;2. Remove task&quot;)
-        print(&quot;3. View tasks&quot;)
-        print(&quot;4. Exit&quot;)
-        
-        choice = input(&quot;Choose an option (1-4): &quot;)
-
-        if choice == '1':
-            task = input(&quot;Enter the task to add: &quot;)
-            todo_list.add_task(task)
-        elif choice == '2':
-            task = input(&quot;Enter the task to remove: &quot;)
-            todo_list.remove_task(task)
-        elif choice == '3':
-            todo_list.view_tasks()
-        elif choice == '4':
-            print(&quot;Exiting the program. Goodbye!&quot;)
-            break
-        else:
-            print(&quot;Invalid choice. Please select a valid option.&quot;)
-
-if __name__ == &quot;__main__&quot;:
-    main()
-```
-
-### How it Works:
-1. **TodoList Class**: Manages the list of tasks with methods to add, remove, and view tasks.
-2. **Main Function**: Provides a simple user interface through a command-line menu.
-3. **Loop**: Continuously asks for user input until the user chooses to exit.
-
-### Usage:
-To use the code:
-1. Copy and paste it into a Python environment (like Jupyter Notebook, IDLE, or a simple text editor and run it via the command line).
-2. Follow the on-screen prompts to manage your to-do list!
-
-Feel free to modify or expand this code as needed!}"""
