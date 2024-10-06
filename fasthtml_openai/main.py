@@ -1,7 +1,8 @@
 from fasthtml.common import *
 from fasthtml.components import Zero_md
 from openai_chat import chat
-from mocks.javascript import mock_javascript_val 
+from mocks.javascript import mock_javascript_val
+from mocks.python import mock_python_val 
 
 app,rt = fast_app()
 app.mount("/assets",StaticFiles(directory="assets"), name="assets")
@@ -65,7 +66,7 @@ def li_assistant(val:str=""):
         return Li(P(val),Input(type="hidden",name="assistant",value=''),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
     
     css_template = Template(Style('.markdown-body {background-color: transparent !important;}'), data_append=True)
-    md_val=Zero_md(css_template, Script(val.replace("</script>","<\/script>"), type="text/markdown"))
+    md_val=Zero_md(css_template, Script(val.replace("</script>","<\\/script>"), type="text/markdown"))
     # md_val=NotStr(f'''<zero-md><script type="text/markdown">{val}</script></zero-md>''')
     return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),P(md_val,cls="overflow-x-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300"),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-start w-full animate-scale-y text-white p-1 origin-top")    
 def form():
@@ -83,7 +84,10 @@ def form_fields():
                 cls="flex w-full appearance-none items-center gap-1 rounded border border-slate-300 bg-transparent px-4 py-2 text-white shadow outline-none transition duration-300  focus-within:ring-1 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:ring-offset-slate-700"               
              )
 def input_field():
-    return Textarea(cls="flex-1 resize-none appearance-none bg-transparent outline-none scrollbar-thin scrollbar-track-transparent scrollbar-thumb-red-300 disabled:cursor-not-allowed disabled:opacity-60", name="prompt", placeholder="Send a message", id="txtMessage",rows="2",onKeyDown="keyDown(event,this)")        
+    return Textarea(cls="flex-1 resize-none appearance-none bg-transparent outline-none scrollbar-thin scrollbar-track-transparent scrollbar-thumb-red-300 disabled:cursor-not-allowed disabled:opacity-60", 
+                    name="prompt", placeholder="Send a message", id="txtMessage",rows="2",
+                    x_model="$store.prompts.currentVal",
+                    onKeyDown="keyDown(event,this)")        
 def submit_btn():
     return Button(
             I("arrow_upward",cls="material-icons",x_show="!$store.processing.value"),
@@ -126,7 +130,7 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
         if(index+1<len(assistant)):
             messages.append({"role":"assistant","content":assistant[index+1]})    
     output=await chat(messages) 
-    # output=mock_javascript_val   
+    # output=mock_python_val   
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
 serve()

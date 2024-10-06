@@ -1,4 +1,4 @@
-val="""Sure! Below is a simple Python script that demonstrates how to create a basic program to manage a to-do list. The program allows users to add, remove, and view tasks.
+mock_python_val="""Sure! Below is a simple Python script that demonstrates how to create a basic program to manage a to-do list. The program allows users to add, remove, and view tasks.
 
 ```python
 class TodoList:

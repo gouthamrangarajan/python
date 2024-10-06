@@ -1,6 +1,7 @@
 document.addEventListener('alpine:init', () => {
     Alpine.store('prompts', {
         data: [''],
+        currentVal: '',
         pushData(val) {
             this.data.push(val);
         },
@@ -35,15 +36,17 @@ function afterSwap(_, self) {
 }
 
 function keyDown(event, self) {
-    if (event.key === 'Enter' && !Alpine.store('processing').value) {
+    if (event.key === 'Enter' && !Alpine.store('processing').value
+        && event.currentTarget.value.trim() != ''
+    ) {
         event.preventDefault();
         self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
     }
 }
 
 function submitBtnClick(event, self) {
-    if (!Alpine.store('processing').value) {
-        event.preventDefault();
+    event.preventDefault();
+    if (!Alpine.store('processing').value && Alpine.store('prompts').currentVal.trim() != '') {
         self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
     }
 }
