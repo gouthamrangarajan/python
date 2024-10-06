@@ -84,7 +84,7 @@ def input_field():
 def submit_btn():
     return Button(
             I("arrow_upward",cls="material-icons"),
-            type="submit",onClick="submitBtnClick(event,this)",
+            type="submit",onClick="submitBtnClick(event,this)",            
             cls="appearance-none outline-none p-1 rounded-full bg-slate-700 text-white transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 focus:ring-1 focus:ring-white")
 def h1():
     return H1("Chat with OpenAI",cls="text-xl font-semibold text-red-300 lg:text-2xl")

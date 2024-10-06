@@ -15,4 +15,3 @@ async def chat(message_collection:list[dict[str, any]]):
         messages=message_collection,
         model=os.environ.get("OPENAI_API_MODEL"))    
     return chat_completion.choices[0].message.content
-
