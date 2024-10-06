@@ -125,8 +125,8 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
         messages.append({"role":"user","content":item})
         if(index+1<len(assistant)):
             messages.append({"role":"assistant","content":assistant[index+1]})    
-    # output=await chat(messages) 
-    output=mock_javascript_val   
+    output=await chat(messages) 
+    # output=mock_javascript_val   
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
 serve()
