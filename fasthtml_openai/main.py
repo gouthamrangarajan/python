@@ -14,7 +14,7 @@ def link_icons():
 def script_htmx():
     return Script(src="/assets/library/htmx.min.js",type="text/javascript")
 def script_alpine():
-    return Script(src="/assets/library/alpine.min.js",type="text/javascript")
+    return Script(src="/assets/library/alpine.min.js",type="text/javascript",defer=True)
 def script_zero_md():
     # below does not work figure out why
     # return Script(src="/assets/library/zero-md.min.js",type="module") 
@@ -78,10 +78,10 @@ def get():
         Meta(name="viewport",content="width=device-width, initial-scale=1.0"),
         fav_icon(),link_icons(),link_css(),
         Body(
-            Main(form(),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data=""),
-            script_app(),            
-            script_htmx(),
+            Main(form(),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
+            script_app(),           
             script_alpine(),            
+            script_htmx(),
             script_zero_md()
         )
     )
@@ -102,8 +102,8 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
         messages.append({"role":"user","content":item})
         if(index+1<len(assistant)):
             messages.append({"role":"assistant","content":assistant[index+1]})    
-    output=await chat(messages) 
-    # output=mock_python_value   
+    # output=await chat(messages) 
+    output=mock_python_value   
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
 
