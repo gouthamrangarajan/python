@@ -94,6 +94,7 @@ def get():
     return Html(
         Head(title="Fasthtml OpenAI"),
         Meta(name="viewport",content="width=device-width, initial-scale=1.0"),
+        Meta(name="description",content="Simple OpenAI chat using FastHTML"),
         fav_icon(),link_icons(),link_css(),
         Body(
             Main(form(),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
