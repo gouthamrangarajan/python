@@ -7,6 +7,9 @@ document.addEventListener('alpine:init', () => {
         },
         updateData(val, idx) {
             this.data[idx] = val;
+        },
+        setCurrentVal(val) {
+            this.currentVal = val;
         }
     });
     Alpine.store('processing', {
@@ -24,7 +27,7 @@ function formBeforeSend(_, self) {
     Alpine.store('prompts').updateData(text, Alpine.store('prompts').data.length - 1);
     Alpine.store('prompts').pushData('');
     Alpine.store('processing').toggle();
-    textArea.value = '';
+    Alpine.store('prompts').setCurrentVal('');
     const scrollEl = document.getElementById('scroll-div');
     scrollEl.scrollTop = scrollEl.scrollHeight;
 }
