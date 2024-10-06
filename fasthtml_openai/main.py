@@ -125,7 +125,7 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
     # output=mock_python_value   
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
-
+serve()
 mock_python_value="""Sure! Below is a simple Python script that demonstrates how to create a basic program to manage a to-do list. The program allows users to add, remove, and view tasks.
 
 ```python
