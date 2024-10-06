@@ -10,7 +10,7 @@ document.addEventListener('alpine:init', () => {
     });
 });
 
-function formBeforeSend() {
+function formBeforeSend(_, self) {
     // self.children.
     const textArea = document.getElementById('txtMessage');
     const text = textArea.value;
@@ -19,6 +19,9 @@ function formBeforeSend() {
     textArea.value = '';
     const scrollEl = document.getElementById('scroll-div');
     scrollEl.scrollTop = scrollEl.scrollHeight;
+}
+function afterSwap(_, self) {
+
 }
 
 function keyDown(event, self) {
@@ -33,3 +36,15 @@ function submitBtnClick(event, self) {
     self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
 }
 
+function formError(_, self) {
+    const errorElAssistant = document.getElementById("errorTemplateAssistant").innerHTML;
+    let errorElUser = document.getElementById("errorTemplateUser").innerHTML;
+    errorElUser = errorElUser.replaceAll("store_data_idx", Alpine.store('prompts').data.length - 1)
+    const ul = document.getElementById("list");
+    const liAssistant = document.createElement('li');
+    const liUser = document.createElement('li');
+    ul.appendChild(liAssistant);
+    ul.appendChild(liUser);
+    liAssistant.outerHTML = errorElAssistant;
+    liUser.outerHTML = errorElUser;
+}

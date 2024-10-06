@@ -15,6 +15,15 @@ def script_htmx():
     return Script(src="/assets/library/htmx.min.js",type="text/javascript")
 def script_alpine():
     return Script(src="/assets/library/alpine.min.js",type="text/javascript",defer=True)
+def script_error_template():
+    with open("./assets/error_template_assistant.js","r") as file:
+        error_template_assistant= file.read()
+    
+    with open("./assets/error_template_user.js","r") as file:
+        error_template_user= file.read()
+    
+    return (Script(f'{error_template_assistant}',type="text/template",id="errorTemplateAssistant"),
+            Script(f'{error_template_user}',type="text/template",id="errorTemplateUser"))
 def script_zero_md():
     # below does not work figure out why
     # return Script(src="/assets/library/zero-md.min.js",type="module") 
@@ -43,9 +52,16 @@ def li_user(idx:int=0):
               cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
               x_show=f'$store.prompts.data[{idx}]!=""'
               )
+def li_user_error():
+    return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[$store.prompts.data.length-1]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[$store.prompts.data.length-1]'),
+              cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
+              x_show=f'$store.prompts.data[$store.prompts.data.length-1]!=""'
+              )
 def li_assistant(val:str=""):
     if(val==""):
         return Li(P(val),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
+    elif(val=="Error. Try again."):
+        return Li(P(val),Input(type="hidden",name="assistant",value=''),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
     
     css_template = Template(Style('.markdown-body {background-color: transparent !important;}'), data_append=True)
     md_val=Zero_md(css_template, Script(val, type="text/markdown"))
@@ -55,6 +71,7 @@ def form():
     return Form(h1(),chat_container(),form_fields(),hx_trigger="chat_submit",
                 hx_post="/message",hx_target="#list",hx_indicator="#loader",
                 hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
+                hx_on_htmx_response_error="formError(event,this)",hx_on_htmx_after_swap="afterSwap(event,this)",
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 ")
 def form_fields():
     return Div(
@@ -79,14 +96,15 @@ def get():
         fav_icon(),link_icons(),link_css(),
         Body(
             Main(form(),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
-            script_app(),           
+            script_app(),    
+            script_error_template(),       
             script_alpine(),            
             script_htmx(),
             script_zero_md()
         )
     )
 @rt("/message")
-async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):   
+async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):      
     # print(prompt,user)    
     # last item in user array is empty
     # first item in assistant array is empty
