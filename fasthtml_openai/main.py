@@ -65,7 +65,7 @@ def li_assistant(val:str=""):
     elif(val=="Error. Try again."):
         return Li(P(val),Input(type="hidden",name="assistant",value=''),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
     
-    css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important;}'), data_append=True)
+    css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important; color: rgb(255 255 255) !important;}'), data_append=True)
     md_val=Zero_md(css_template, Script(val.replace("</script>","<\\/script>"), type="text/markdown"))
     # md_val=NotStr(f'''<zero-md><script type="text/markdown">{val}</script></zero-md>''')
     return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),P(md_val,cls="overflow-x-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300"),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-start w-full animate-scale-y text-white p-1 origin-top")    
