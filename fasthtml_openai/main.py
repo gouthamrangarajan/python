@@ -52,7 +52,7 @@ def chat_container():
 def li_user(idx:int=0):
     return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[{idx}]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[{idx}]'),
               cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
-              x_show=f'$store.prompts.data[{idx}]!=""'
+              x_cloak=True,x_show=f'$store.prompts.data[{idx}]!=""'
               )
 def li_user_error():
     return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[$store.prompts.data.length-1]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[$store.prompts.data.length-1]'),
