@@ -41,6 +41,7 @@ function afterSwap(_, self) {
 function keyDown(event, self) {
     if (event.key === 'Enter' && !Alpine.store('processing').value
         && event.currentTarget.value.trim() != ''
+        && !event.shiftKey
     ) {
         event.preventDefault();
         self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
