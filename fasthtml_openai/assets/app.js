@@ -7,7 +7,7 @@ document.addEventListener('alpine:init', () => {
         pushData(val) {
             this.data.push(val);
         },
-        updateData(val, idx) {
+        updateData(idx, val) {
             this.data[idx] = val;
         },
         setCurrentVal(val) {
@@ -26,10 +26,7 @@ document.addEventListener('alpine:init', () => {
 });
 
 function formBeforeSend(_, self) {
-    // self.children.
-    const textArea = document.getElementById('txtMessage');
-    const text = textArea.value;
-    Alpine.store('prompts').updateData(text, Alpine.store('prompts').data.length - 1);
+    Alpine.store('prompts').updateData(Alpine.store('prompts').data.length - 1, Alpine.store('prompts').currentVal);
     Alpine.store('prompts').pushData('');
     Alpine.store('processing').toggle();
     Alpine.store('prompts').setCurrentVal('');
