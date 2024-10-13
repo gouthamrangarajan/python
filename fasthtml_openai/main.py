@@ -11,6 +11,8 @@ app,rt = fast_app()
 app.mount("/assets",StaticFiles(directory="assets"), name="assets")
 app.add_middleware(UserIdMiddleware)
 
+def link_easings_css():
+    return Link(href="/assets/library/easings.min.css",rel="stylesheet")
 def link_css():
     return Link(href="/assets/app.css",rel="stylesheet")
 def fav_icon():
@@ -119,10 +121,10 @@ def get(request:Request):
             session_id=session[0]
             conversations=get_user_chat_conversations(session_id)            
     return Html(
-        Head(title="Fasthtml OpenAI"),
+        Head(Title("Fasthtml OpenAI"),
         Meta(name="viewport",content="width=device-width, initial-scale=1.0"),
         Meta(name="description",content="Simple OpenAI chat using FastHTML"),
-        fav_icon(),link_icons(),link_css(),
+        fav_icon(),link_icons(),link_easings_css(),link_css()),
         Body(
             Main(form(session_id,conversations),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
             script_app(),    

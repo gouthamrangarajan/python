@@ -10,7 +10,7 @@ module.exports = {
         }
       },
       animation: {
-        'scale-y': "scale-y 0.3s ease-in-out",
+        'scale-y': "scale-y 1s var(--ease-spring-3)",
         'bounce-1': "bounce 0.5s infinite",
         'bounce-2': "bounce 1s infinite",
         'bounce-3': "bounce 1.5s infinite"
