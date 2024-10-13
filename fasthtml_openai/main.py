@@ -51,6 +51,8 @@ def loader():
 def chat_container(conversations:list[dict]):
     conversation_els= [li_conversation(conversation) for conversation in conversations]
     user_conversation=list(filter(lambda el: el[1]=='user',conversations ))
+    # adding empty li_assistant in the beginning so that array comes as input during post 
+    # adding empty li_user in the end so that it can be accessed by alpine to inject optimistic ui
     return Div(
         Ul(li_assistant(),*conversation_els,li_user(len(user_conversation)),id="list"),
         loader(),
