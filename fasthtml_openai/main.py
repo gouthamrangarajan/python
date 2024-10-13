@@ -1,6 +1,7 @@
 from fasthtml.common import *
 from fasthtml.components import Zero_md
 from data.db import get_first_user_chat_session, get_user_chat_conversations, get_user_chat_sessions, insert_chat_conversation
+from data.user_chat_model import UserChat
 from middleware.user_id import UserIdMiddleware
 from openai_chat import chat
 from mocks.javascript import mock_javascript_val
@@ -132,7 +133,8 @@ def get(request:Request):
         )
     )
 @rt("/message")
-async def post(request:Request,sessionId:int,prompt:str,user:list[str]=[],assistant:list[str]=[]):    
+async def post(request:Request,user_chat:UserChat):    
+    sessionId,prompt,user,assistant=user_chat.to_tuple()
     user_id=base64.b64decode(request.cookies.get("id").encode("utf8")).decode('utf-8')    
     output_session_id=insert_chat_conversation(user_id,sessionId,prompt,"user")
     # last item in user array is empty
