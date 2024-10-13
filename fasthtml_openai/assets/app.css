@@ -911,7 +911,7 @@ video {
 
 .htmx-indicator {
   opacity: 0;
-  transition: opacity 500ms ease-in;
+  transition: opacity 500ms var(--ease-1);
 }
 
 .htmx-request .htmx-indicator {
