@@ -52,7 +52,7 @@ def chat_container(conversations:list[dict]):
     conversation_els= [li_conversation(conversation) for conversation in conversations]
     user_conversation=list(filter(lambda el: el[1]=='user',conversations ))
     return Div(
-        Ul(*conversation_els,li_assistant(),li_user(len(user_conversation)),id="list"),
+        Ul(li_assistant(),*conversation_els,li_user(len(user_conversation)),id="list"),
         loader(),
         tabindex="0",id="scroll-div",
         cls="w-full border border-white rounded overflow-y-auto overflow-x-hidden scroll-smooth pb-20 h-[73vh] transition duration-300 scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 focus:ring-1 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-slate-700 xl:h-[78vh]")
