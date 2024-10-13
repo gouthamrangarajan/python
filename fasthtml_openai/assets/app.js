@@ -1,6 +1,6 @@
 document.addEventListener('alpine:init', () => {
-    let length = document.getElementsByName('user').length;
-    let data = Array.from({ length }).map(el => "");
+    const length = document.getElementsByName('user').length;
+    const data = Array.from({ length }).map(el => "");
     Alpine.store('prompts', {
         data,
         currentVal: '',
