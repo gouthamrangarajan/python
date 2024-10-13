@@ -1,11 +1,14 @@
 from fasthtml.common import *
 from fasthtml.components import Zero_md
+from data.db import get_first_user_chat_session, get_user_chat_conversations, get_user_chat_sessions, insert_chat_conversation
+from middleware.user_id import UserIdMiddleware
 from openai_chat import chat
 from mocks.javascript import mock_javascript_val
 from mocks.python import mock_python_val 
 
 app,rt = fast_app()
 app.mount("/assets",StaticFiles(directory="assets"), name="assets")
+app.add_middleware(UserIdMiddleware)
 
 def link_css():
     return Link(href="/assets/app.css",rel="stylesheet")
@@ -42,39 +45,48 @@ def loader():
     return Div(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0")
               ,P(loader_span(1),loader_span(2),loader_span(3),cls="flex gap-1",style="view-transition-name:loader")              
               ,cls="flex gap-2 items-center w-full text-white p-1 htmx-indicator",id="loader")
-def chat_container():
+def chat_container(conversations:list[dict]):
+    conversation_els= [li_conversation(conversation) for conversation in conversations]
+    user_conversation=list(filter(lambda el: el[1]=='user',conversations ))
     return Div(
-        Ul(li_assistant(),li_user(),id="list"),
+        Ul(*conversation_els,li_assistant(),li_user(len(user_conversation)),id="list"),
         loader(),
         tabindex="0",id="scroll-div",
         cls="w-full border border-white rounded overflow-y-auto overflow-x-hidden scroll-smooth pb-20 h-[73vh] transition duration-300 scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 focus:ring-1 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-slate-700 xl:h-[78vh]")
+def li_conversation(conversation:dict):
+    if(conversation[1]=="user"):
+        return Li(I("person",cls="material-icons shrink-0"),P(conversation[0]),Input(type="hidden",name="user",value=f'{conversation[0]}'),
+                cls="flex gap-2 items-center w-full text-white p-1"
+              )
+    else:
+        return li_assistant(conversation[0],False)
+              
 def li_user(idx:int=0):
     return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[{idx}]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[{idx}]'),
               cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
-              x_cloak=True,x_show=f'$store.prompts.data[{idx}]!=""'
+              x_show=f'$store.prompts.data[{idx}]!=""'
               )
-def li_user_error():
-    return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[$store.prompts.data.length-1]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[$store.prompts.data.length-1]'),
-              cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
-              x_show=f'$store.prompts.data[$store.prompts.data.length-1]!=""'
-              )
-def li_assistant(val:str=""):
+def li_assistant(val:str="",animate:bool=True):
     if(val==""):
-        return Li(P(val),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
+        return Li(P(val),Input(type="hidden",name="assistant",value=f'{val}'),cls=f'flex gap-2 items-center w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
     elif(val=="Error. Try again."):
-        return Li(P(val),Input(type="hidden",name="assistant",value=''),cls="flex gap-2 items-center w-full animate-scale-y text-white p-1 origin-top")
+        return Li(P(val),Input(type="hidden",name="assistant",value=''),cls=f'flex gap-2 items-center w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
     
     css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important; color: rgb(255 255 255) !important;}'), data_append=True)
     md_val=Zero_md(css_template, Script(val.replace("</script>","<\\/script>"), type="text/markdown"))
     # md_val=NotStr(f'''<zero-md><script type="text/markdown">{val}</script></zero-md>''')
-    return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),P(md_val,cls="overflow-x-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 animate-scale-y origin-top"),Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-start w-full text-white p-1")    
-def form():
-    return Form(h1(),chat_container(),form_fields(),hx_trigger="chat_submit",
+    return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),
+              P(md_val,cls=f'overflow-x-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 origin-top {"animate-scale-y" if animate else ""}'),
+              Input(type="hidden",name="assistant",value=f'{val}'),cls="flex gap-2 items-start w-full text-white p-1")    
+def form(session_id:int,conversations:list[dict]):           
+    return Form(h1(),chat_container(conversations),form_fields(),Input(id="sessionId",type="hidden",value=f'{session_id}',name="sessionId"),
+                hx_trigger="chat_submit",
                 hx_post="/message",hx_target="#list",hx_indicator="#loader",
                 hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
                 hx_on_htmx_response_error="formError(event,this)",
                 hx_on_htmx_before_swap="beforeSwap(event,this)",
                 hx_on_htmx_after_swap="afterSwap(event,this)",
+                x_cloak=True,
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 ")
 def form_fields():
     return Div(
@@ -96,14 +108,22 @@ def submit_btn():
 def h1():
     return H1("Chat with OpenAI",cls="text-xl font-semibold text-red-300 lg:text-2xl")
 @rt("/")
-def get():
+def get(request:Request):
+    conversations=[]
+    session_id=1
+    if("id" in request.cookies):
+        user_id=base64.b64decode(request.cookies.get("id").encode("utf8")).decode('utf-8') 
+        session=get_first_user_chat_session(user_id)
+        if(session is not None):
+            session_id=session[0]
+            conversations=get_user_chat_conversations(session_id)            
     return Html(
         Head(title="Fasthtml OpenAI"),
         Meta(name="viewport",content="width=device-width, initial-scale=1.0"),
         Meta(name="description",content="Simple OpenAI chat using FastHTML"),
         fav_icon(),link_icons(),link_css(),
         Body(
-            Main(form(),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
+            Main(form(session_id,conversations),cls="bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
             script_app(),    
             script_error_template(),       
             script_alpine(),            
@@ -112,8 +132,9 @@ def get():
         )
     )
 @rt("/message")
-async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):      
-    # print(prompt,user)    
+async def post(request:Request,sessionId:int,prompt:str,user:list[str]=[],assistant:list[str]=[]):    
+    user_id=base64.b64decode(request.cookies.get("id").encode("utf8")).decode('utf-8')    
+    output_session_id=insert_chat_conversation(user_id,sessionId,prompt,"user")
     # last item in user array is empty
     # first item in assistant array is empty
     nxtDataIdx=len(user)
@@ -131,6 +152,9 @@ async def post(prompt:str,user:list[str]=[],assistant:list[str]=[]):
     output=await chat(messages) 
     # output=mock_python_val   
     # output=mock_javascript_val
+    output_session_id=insert_chat_conversation(user_id,output_session_id,output,"assistant")
+    if(sessionId!=output_session_id):
+        return li_assistant(f'{output}'),li_user(nxtDataIdx),Input(id="sessionId",type="hidden",value=f'{output_session_id}',hx_swap_oob="true",hx_swap="outerHTML")
     return li_assistant(f'{output}'),li_user(nxtDataIdx)
 
 serve()

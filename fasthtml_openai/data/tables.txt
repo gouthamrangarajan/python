@@ -1,0 +1,19 @@
+CREATE TABLE users (
+    user_id TEXT PRIMARY KEY,        -- UUID v4 for the user
+    created_at INTEGER NOT NULL      -- Timestamp for when the user was created
+);
+CREATE TABLE chat_sessions (
+    session_id INTEGER PRIMARY KEY AUTOINCREMENT, -- Auto-incrementing ID for each session
+    user_id TEXT NOT NULL,                        -- Foreign key to the users table
+    title TEXT NOT NULL,                          -- Title of the chat session
+    created_at INTEGER NOT NULL, 
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+CREATE TABLE chat_conversations (
+    conversation_id INTEGER PRIMARY KEY AUTOINCREMENT, -- Auto-incrementing ID for each conversation/message
+    session_id INTEGER NOT NULL,                       -- Foreign key to the chat_sessions table
+    message TEXT NOT NULL,                             -- Message content
+    sender TEXT NOT NULL,                              -- Sender of the message (e.g., 'user' or 'assistant')
+    timestamp INTEGER NOT NULL,                        -- Timestamp indicating when the message was sent
+    FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id) ON DELETE CASCADE
+);

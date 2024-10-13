@@ -1,6 +1,8 @@
 document.addEventListener('alpine:init', () => {
+    let length = document.getElementsByName('user').length;
+    let data = Array.from({ length }).map(el => "");
     Alpine.store('prompts', {
-        data: [''],
+        data,
         currentVal: '',
         pushData(val) {
             this.data.push(val);
@@ -16,6 +18,9 @@ document.addEventListener('alpine:init', () => {
         value: false,
         toggle() {
             this.value = !this.value;
+        },
+        complete() {
+            this.value = false;
         }
     });
 });
@@ -35,7 +40,7 @@ function beforeSwap(event, _) {
     // event.detail.serverResponse = event.detail.serverResponse.replaceAll('</script>', '<\\x3C/script\\x3E>');
 }
 function afterSwap(_, self) {
-    Alpine.store('processing').toggle();
+    Alpine.store('processing').complete();
 }
 
 function keyDown(event, self) {
