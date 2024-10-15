@@ -61,21 +61,21 @@ def chat_container(conversations:list[dict]):
 def li_conversation(conversation:dict):
     if(conversation[1]=="user"):
         return Li(I("person",cls="material-icons shrink-0"),P(conversation[0]),Input(type="hidden",name="user",value=f'{conversation[0]}'),
-                cls="flex gap-2 items-center w-full text-white p-1"
+                cls="flex gap-2 items-start w-full text-white p-1"
               )
     else:
         return li_assistant(conversation[0],False)
               
 def li_user(idx:int=0):
     return Li(I("person",cls="material-icons shrink-0"),P(x_text=f'$store.prompts.data[{idx}]'),Input(type="hidden",name="user",x_model=f'$store.prompts.data[{idx}]'),
-              cls="flex gap-2 items-center w-full text-white p-1 animate-scale-y origin-top",
+              cls="flex gap-2 items-start w-full text-white p-1 animate-scale-y origin-top",
               x_show=f'$store.prompts.data[{idx}]!=""'
               )
 def li_assistant(val:str="",animate:bool=True):
     if(val==""):
-        return Li(P(val),Input(type="hidden",name="assistant",value=f'{val}'),cls=f'flex gap-2 items-center w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
+        return Li(P(val),Input(type="hidden",name="assistant",value=f'{val}'),cls=f'flex gap-2 items-start w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
     elif(val=="Error. Try again."):
-        return Li(P(val),Input(type="hidden",name="assistant",value=''),cls=f'flex gap-2 items-center w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
+        return Li(P(val),Input(type="hidden",name="assistant",value=''),cls=f'flex gap-2 items-start w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
     
     css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important; color: rgb(255 255 255) !important;}'), data_append=True)
     md_val=Zero_md(css_template, Script(val.replace("</script>","<\\/script>"), type="text/markdown"))
