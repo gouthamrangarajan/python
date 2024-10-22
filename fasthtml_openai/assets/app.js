@@ -2,6 +2,7 @@ document.body.addEventListener('htmx:load', function (evt) {
 
 });
 document.addEventListener('alpine:init', () => {
+    Alpine.plugin(focus);
     const length = document.getElementsByName('user').length;
     const data = Array.from({ length }).map(el => "");
     Alpine.store('prompts', {
@@ -55,7 +56,12 @@ function afterSwap(event, self) {
             const href = els[els.length - 1].children[0].href
             menuCloseClick(event, self);
             setTimeout(() => {
-                document.location.href = href;
+                if (!document.startViewTransition) {
+                    document.location.href = href;
+                }
+                else {
+                    document.startViewTransition(() => document.location.href = href);
+                }
             }, 400);
         }
     }
@@ -64,7 +70,12 @@ function goToSession(event, self) {
     event.preventDefault();
     menuCloseClick(event, self);
     setTimeout(() => {
-        document.location.href = self.href;
+        if (!document.startViewTransition) {
+            document.location.href = self.href;
+        }
+        else {
+            document.startViewTransition(() => document.location.href = self.href);
+        }
     }, 400);
 }
 

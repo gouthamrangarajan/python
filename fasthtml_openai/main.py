@@ -22,7 +22,8 @@ def link_icons():
 def script_htmx():
     return Script(src="/assets/library/htmx.min.js",type="text/javascript")
 def script_alpine():
-    return Script(src="/assets/library/alpine.min.js",type="text/javascript",defer=True)
+    return (Script(src="/assets/library/alpine-focus.min.js",type="text/javascript",defer=True),
+            Script(src="/assets/library/alpine.min.js",type="text/javascript",defer=True))
 def script_error_template():
     with open("./assets/error_template_assistant.js","r") as file:
         error_template_assistant= file.read()
@@ -90,18 +91,19 @@ def menu_button_and_h1():
 def sessions():
     return Div(Div(                
                 Ul(add_new_chat_button(),id="menu",hx_get="/sessions",hx_swap="beforeend",hx_trigger="load",cls="flex flex-col gap-1 items-center"),
-               id="menuContainer",cls="bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 animate-slide-right-opp py-2 px-4 pt-10 lg:w-1/3"
+               id="menuContainer",cls="bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 animate-slide-right-opp py-2 px-4 pt-10 lg:w-1/3",
+               style="view-transition-name:sessions",
                    ),
                Button(I("close",cls="material-icons"),cls="outline-none appearance-none text-red-600 p-1 rounded-full transition duration-300 mt-2 focus:ring-1 focus:ring-red-600",onClick="menuCloseClick(event,this)")
-                ,cls="absolute flex gap-1 items-start bg-black/50 w-screen h-screen text-white z-10",x_show="$store.showSessions.value")
+                ,cls="absolute flex gap-1 items-start bg-black/50 w-screen h-screen text-white z-10",x_show="$store.showSessions.value",x_trap="$store.showSessions.value")
 def li_session(session:dict,oob:bool=False):
     if(oob):
         return Li(A(session[1],href=f'/{session[0]}',onClick="goToSession(event,this)",
-                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis hover:underline")
+                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis underline-offset-4 hover:underline focus:underline")
             ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",hx_swap_oob="true",
             hx_target=f'#sessionLink_{session[0]}',hx_swap="outerHTML",id=f'sessionLink_{session[0]}')
     return Li(A(session[1],href=f'/{session[0]}',onClick="goToSession(event,this)",
-                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis hover:underline")
+                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis underline-offset-4 hover:underline focus:underline")
             ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",id=f'sessionLink_{session[0]}',)
 def first_li_session(session:dict):
     return Li(A(session[1],href=f'/{session[0]}',onClick="goToSession(event,this)",
@@ -123,7 +125,8 @@ def chat_container(conversations:list[dict]):
         Ul(li_assistant(),*conversation_els,li_user(len(user_conversation)),id="list"),
         loader(),
         tabindex="0",id="scroll-div",
-        cls="w-full border border-white rounded overflow-y-auto overflow-x-hidden scroll-smooth pb-20 h-[73vh] transition duration-300 scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 focus:ring-1 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-slate-700 xl:h-[78vh]")
+        cls="w-full border border-white rounded overflow-y-auto overflow-x-hidden scroll-smooth pb-20 h-[73vh] transition duration-300 scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 focus:ring-1 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-slate-700 xl:h-[78vh]",
+        style="view-transition-name:chat-container")
 def li_conversation(conversation:dict):
     if(conversation[1]=="user"):
         return Li(I("person",cls="material-icons shrink-0"),P(conversation[0]),Input(type="hidden",name="user",value=f'{conversation[0]}'),

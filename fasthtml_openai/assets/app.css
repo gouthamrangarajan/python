@@ -898,16 +898,12 @@ video {
   padding-bottom: 5rem;
 }
 
-.pt-10 {
-  padding-top: 2.5rem;
-}
-
-.pb-4 {
-  padding-bottom: 1rem;
-}
-
 .pb-8 {
   padding-bottom: 2rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
 }
 
 .text-center {
@@ -936,6 +932,10 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.underline-offset-4 {
+  text-underline-offset: 4px;
 }
 
 .shadow {
@@ -1068,6 +1068,10 @@ video {
 }
 
 .hover\:underline:hover {
+  text-decoration-line: underline;
+}
+
+.focus\:underline:focus {
   text-decoration-line: underline;
 }
 
