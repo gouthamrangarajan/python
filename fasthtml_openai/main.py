@@ -109,9 +109,10 @@ def first_li_session(session:dict):
             ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",hx_swap_oob="true",
             hx_target=f'#menu',hx_swap="beforeend",id=f'sessionLink_{session[0]}')
 def add_new_chat_button():               
-    return Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="$store.processing.value"),
+    return Div(Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="$store.processing.value"),
                     I("add",cls="material-icons",x_show="!$store.processing.value"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",
                     onClick="addChatClick(event,this)",cls="appearance-none outline-none cursor-pointer flex gap-1 items-center bg-slate-700 text-white py-2 px-4 rounded transition duration-300 focus:ring-1 focus:ring-white")
+            ,cls="pb-8")
 
 def chat_container(conversations:list[dict]):
     conversation_els= [li_conversation(conversation) for conversation in conversations]
@@ -164,6 +165,11 @@ def get(request:Request,session_id:int=0):
     if("id" in request.cookies):
         user_id=base64.b64decode(request.cookies.get("id").encode("utf8")).decode('utf-8') 
         session=get_first_user_chat_session(user_id)
+        all_sessions=get_user_chat_sessions(user_id)
+        if(session_id!=0):
+            all_sessions_filter=list(filter(lambda dt:dt[0]==session_id,all_sessions))
+            if(len(all_sessions_filter)==0):
+                return Response("UnAuthorized",status_code=401)
         if(session is not None):
             if(session_id==0):
                 session_id=session[0]
