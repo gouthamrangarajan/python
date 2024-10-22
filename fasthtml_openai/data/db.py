@@ -22,12 +22,14 @@ def insert_chat_session(user_id:str,title:str):
     cur.execute("INSERT INTO chat_sessions (user_id, title,created_at) VALUES (?,?,?)",(user_id,title,datetime.now().timestamp()))
     conn.commit()
     return cur.lastrowid
-
+def update_chat_session_title(session_id:int,title:str):
+    conn.execute("UPDATE chat_sessions SET title=? WHERE session_id=?",(title,session_id))
+    conn.commit()
 def get_user_chat_sessions(user_id:str):
     return conn.execute("SELECT session_id,title FROM chat_sessions WHERE user_id=?",(user_id,)).fetchall()
 
 def get_first_user_chat_session(user_id:str):
-    return conn.execute("SELECT session_id,title FROM chat_sessions WHERE user_id=?",(user_id,)).fetchone()
+    return conn.execute("SELECT session_id,title FROM chat_sessions WHERE user_id=? ORDER BY session_id",(user_id,)).fetchone()
 
 def get_user_chat_session(session_id:int,user_id:str):
     return conn.execute("SELECT session_id,title FROM chat_sessions WHERE session_id=? AND user_id=?",(session_id,user_id)).fetchone()
