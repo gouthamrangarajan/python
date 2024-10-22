@@ -57,8 +57,7 @@ def form(session_id:int,conversations:list[dict]):
                 hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
                 hx_on_htmx_response_error="formError(event,this)",
                 hx_on_htmx_before_swap="beforeSwap(event,this)",
-                hx_on_htmx_after_swap="afterSwap(event,this)",
-                x_cloak=True,
+                hx_on_htmx_after_swap="afterSwap(event,this)",                
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 "),
                cls="flex flex-col gap-2 items-center justify-center w-full")
 def form_fields():
@@ -176,7 +175,7 @@ def get(request:Request,session_id:int=0):
         fav_icon(),link_icons(),link_easings_css(),link_css()),
         Body(
             Main(sessions(),form(session_id,conversations)
-                 ,cls="relative bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}"),
+                 ,cls="relative bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}",x_cloak=True),
             script_app(),    
             script_error_template(),       
             script_alpine(),            
