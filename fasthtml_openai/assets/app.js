@@ -1,6 +1,3 @@
-document.body.addEventListener('htmx:load', function (evt) {
-
-});
 document.addEventListener('alpine:init', () => {
     Alpine.plugin(focus);
     const length = document.getElementsByName('user').length;
@@ -20,12 +17,18 @@ document.addEventListener('alpine:init', () => {
     });
     Alpine.store('processing', {
         value: false,
-
+        addChat: false,
         toggle() {
             this.value = !this.value;
         },
+        toggleAddChat() {
+            this.addChat = !this.addChat;
+        },
         complete() {
             this.value = false;
+        },
+        completeAddChat() {
+            this.addChat = false;
         }
     });
     Alpine.store('showSessions', {
@@ -44,13 +47,12 @@ function formBeforeSend(_, __) {
     const scrollEl = document.getElementById('scroll-div');
     scrollEl.scrollTop = scrollEl.scrollHeight;
 }
-function beforeSwap(_, __) {
-    // console.log("enter");
-    // event.detail.serverResponse = event.detail.serverResponse.replaceAll('</script>', '<\\x3C/script\\x3E>');
-}
+
 function afterSwap(event, self) {
-    Alpine.store('processing').complete();
-    if (event.detail.elt == document.getElementById('sessionId')) {
+    if (event.detail.elt == document.getElementById('sessionId')
+        && Alpine.store('showSessions').value
+    ) {
+        Alpine.store('processing').completeAddChat();
         const els = document.getElementsByClassName("sessionLink");
         if (els.length > 0) {
             const href = els[els.length - 1].children[0].href
@@ -64,6 +66,9 @@ function afterSwap(event, self) {
                 }
             }, 400);
         }
+    }
+    else {
+        Alpine.store('processing').complete();
     }
 }
 function goToSession(event, self) {
@@ -118,8 +123,8 @@ function menuCloseClick(event, _) {
 }
 function addChatClick(event, self) {
     event.preventDefault();
-    if (!Alpine.store('processing').value) {
-        Alpine.store('processing').toggle();
+    if (!Alpine.store('processing').addChat) {
+        Alpine.store('processing').toggleAddChat();
         self.dispatchEvent(new Event("chat_new"));
     }
 }

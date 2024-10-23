@@ -56,8 +56,7 @@ def form(session_id:int,conversations:list[dict]):
                 hx_trigger="chat_submit",
                 hx_post="/message",hx_target="#list",hx_indicator="#loader",
                 hx_swap="beforeend transition:true",hx_on_htmx_before_send="formBeforeSend(event,this)",
-                hx_on_htmx_response_error="formError(event,this)",
-                hx_on_htmx_before_swap="beforeSwap(event,this)",
+                hx_on_htmx_response_error="formError(event,this)",                
                 hx_on_htmx_after_swap="afterSwap(event,this)",                
                 cls="w-full mx-auto py-2 px-4 flex flex-col gap-6 items-center justify-center lg:w-7/12 xl:w-6/12 "),
                cls="flex flex-col gap-2 items-center justify-center w-full")
@@ -90,7 +89,7 @@ def menu_button_and_h1():
 
 def sessions():
     return Div(Div(                
-                Ul(add_new_chat_button(),id="menu",hx_get="/sessions",hx_swap="beforeend",hx_trigger="load",cls="flex flex-col gap-1 items-center"),
+                Ul(Li(add_new_chat_button()),id="menu",hx_get="/sessions",hx_swap="beforeend",hx_trigger="load",cls="flex flex-col gap-1 items-center"),
                id="menuContainer",cls="bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 animate-slide-right-opp py-2 px-4 pt-10 lg:w-1/3",
                style="view-transition-name:sessions",
                    ),
@@ -106,13 +105,14 @@ def li_session(session:dict,oob:bool=False):
                 cls="appearance-none outline-none transition duration-300 truncate text-ellipsis underline-offset-4 hover:underline focus:underline")
             ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",id=f'sessionLink_{session[0]}',)
 def first_li_session(session:dict):
-    return Li(A(session[1],href=f'/{session[0]}',onClick="goToSession(event,this)",
-                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis hover:underline")
-            ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",hx_swap_oob="true",
-            hx_target=f'#menu',hx_swap="beforeend",id=f'sessionLink_{session[0]}')
+    return Ul(Li(A(session[1],href=f'/{session[0]}',onClick="goToSession(event,this)",
+                cls="appearance-none outline-none transition duration-300 truncate text-ellipsis underline-offset-4 hover:underline focus:underline")
+              ,cls="sessionLink border-b border-slate-600 w-full py-1 px-3 text-white animate-scale-y",
+              id=f'sessionLink_{session[0]}'),
+            hx_swap_oob="beforeend:#menu")
 def add_new_chat_button():               
-    return Div(Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="$store.processing.value"),
-                    I("add",cls="material-icons",x_show="!$store.processing.value"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",
+    return Div(Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="$store.processing.addChat"),
+                    I("add",cls="material-icons",x_show="!$store.processing.addChat"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",
                     onClick="addChatClick(event,this)",cls="appearance-none outline-none cursor-pointer flex gap-1 items-center bg-slate-700 text-white py-2 px-4 rounded transition duration-300 focus:ring-1 focus:ring-white")
             ,cls="pb-8")
 
