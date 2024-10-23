@@ -238,8 +238,7 @@ async def post(request:Request,user_chat:UserChat):
     if(sessionId!=output_session_id):        
         out_els.append(input_session(output_session_id,True))        
     out_els.append(li_assistant(f'{output}'))
-    out_els.append(li_user(nxtDataIdx))
-    print(out_els)
+    out_els.append(li_user(nxtDataIdx))    
     return out_els
 
 serve()

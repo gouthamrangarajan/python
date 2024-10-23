@@ -19,6 +19,9 @@ def get_user(id:str):
     
 def insert_chat_session(user_id:str,title:str):
     cur=conn.cursor()
+    user=get_user(user_id)      
+    if(user is None):
+        insert_user(user_id)
     cur.execute("INSERT INTO chat_sessions (user_id, title,created_at) VALUES (?,?,?)",(user_id,title,datetime.now().timestamp()))
     conn.commit()
     return cur.lastrowid
