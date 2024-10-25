@@ -80,10 +80,10 @@ def submit_btn():
             I("arrow_upward",cls="material-icons",x_show="!$store.processing.value"),
             Span(loader_span(1),loader_span(2),cls="flex gap-1",x_show="$store.processing.value"),
             type="submit",onClick="submitBtnClick(event,this)",            
-            cls="appearance-none outline-none p-1 rounded-full bg-slate-700 text-white transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 focus:ring-1 focus:ring-white")
+            cls="appearance-none outline-none p-1 rounded-full bg-slate-700 text-white transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 focus:ring-1 focus:ring-white hover:opacity-80")
 def menu_button_and_h1():
     return Div(Button(I("menu",cls="material-icons"),type="button",onClick="menuOpenClick(event,this)",
-               cls="appearance-none outline-none text-white shadow mt-1 p-1 transition duration-300 rounded-full focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"),
+               cls="appearance-none outline-none text-white shadow mt-1 p-1 transition duration-300 rounded-full focus:ring-1 focus:ring-white hover:opacity-80"),
                H1("Chat with OpenAI",cls="w-full text-xl font-semibold text-red-300 text-center lg:text-2xl"),
             cls="flex justify-between items-center w-full py-2 px-4")
 
@@ -93,7 +93,7 @@ def sessions():
                id="menuContainer",cls="bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300 animate-slide-right-opp py-2 px-4 pt-10 lg:w-1/3",
                style="view-transition-name:sessions",
                    ),
-               Button(I("close",cls="material-icons"),cls="outline-none appearance-none text-red-600 p-1 rounded-full transition duration-300 mt-2 focus:ring-1 focus:ring-red-600",onClick="menuCloseClick(event,this)")
+               Button(I("close",cls="material-icons"),cls="outline-none appearance-none text-red-600 p-1 rounded-full transition duration-300 mt-2 focus:ring-1 focus:ring-red-600 hover:opacity-80",onClick="menuCloseClick(event,this)")
                 ,cls="absolute flex gap-1 items-start bg-black/50 w-screen h-screen text-white z-10",x_show="$store.showSessions.value",x_trap="$store.showSessions.value")
 def li_session(session:dict,oob:bool=False):
     if(oob):
@@ -113,7 +113,7 @@ def first_li_session(session:dict):
 def add_new_chat_button():               
     return Div(Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="$store.processing.addChat"),
                     I("add",cls="material-icons",x_show="!$store.processing.addChat"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",
-                    onClick="addChatClick(event,this)",cls="appearance-none outline-none cursor-pointer flex gap-1 items-center bg-slate-700 text-white py-2 px-4 rounded transition duration-300 focus:ring-1 focus:ring-white")
+                    onClick="addChatClick(event,this)",cls="appearance-none outline-none cursor-pointer flex gap-1 items-center bg-slate-700 text-white py-2 px-4 rounded transition duration-300 focus:ring-1 focus:ring-white hover:opacity-80")
             ,cls="pb-8")
 
 def chat_container(conversations:list[dict]):
