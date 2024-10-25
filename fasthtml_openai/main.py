@@ -2,6 +2,7 @@ from fasthtml.common import *
 from fasthtml.components import Zero_md
 from data.db import get_first_user_chat_session, get_user_chat_conversations, get_user_chat_sessions, insert_chat_conversation, insert_chat_session, update_chat_session_title
 from data.user_chat_model import UserChat
+from middleware.no_cache import NoCacheMiddleware
 from middleware.user_id import UserIdMiddleware
 from openai_chat import chat
 from mocks.javascript import mock_javascript_val
@@ -10,6 +11,7 @@ from mocks.python import mock_python_val
 app,rt = fast_app()
 app.mount("/assets",StaticFiles(directory="assets"), name="assets")
 app.add_middleware(UserIdMiddleware)
+app.add_middleware(NoCacheMiddleware)
 
 def link_easings_css():
     return Link(href="/assets/library/easings.min.css",rel="stylesheet")
@@ -184,12 +186,13 @@ def get(request:Request,session_id:int=0):
         fav_icon(),link_icons(),link_easings_css(),link_css()),
         Body(
             Main(sessions(),form(session_id,conversations)
-                 ,cls="relative bg-slate-800 w-screen h-screen overflow-hidden",x_data="{}",x_cloak=True),
+                 ,cls="relative w-screen h-screen overflow-hidden",x_data="{}",x_cloak=True),
             script_app(),    
             script_error_template(),       
             script_alpine(),            
             script_htmx(),
-            script_zero_md()
+            script_zero_md(),
+            cls="bg-slate-800"
         )
     )
 @rt('/chat/new')
