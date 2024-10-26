@@ -17,7 +17,8 @@ module.exports = {
       },
       transitionTimingFunction: {
         'in-out-1': "var(--ease-in-out-1)",
-        'spring-3': "var(--ease-spring-3)"
+        'spring-3': "var(--ease-spring-3)",
+        'spring-1': "var(--ease-spring-1)",
       }
     },
   },

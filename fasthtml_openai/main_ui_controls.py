@@ -87,7 +87,7 @@ def submit_btn():
             cls="appearance-none outline-none p-1 rounded-full bg-slate-700 text-white transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 focus:ring-1 focus:ring-white hover:opacity-80")
 def sessions():
     alpine_animation_transition_bindings={}
-    alpine_animation_transition_bindings['x-transition:enter']='transition ease-in-out-1 duration-300'
+    alpine_animation_transition_bindings['x-transition:enter']='transition ease-spring-1 duration-[600ms]'
     alpine_animation_transition_bindings['x-transition:enter-start']='opacity-0 transform -translate-x-full'
     alpine_animation_transition_bindings['x-transition:enter-end']='opacity-1 transform translate-x-0'
     alpine_animation_transition_bindings['x-transition:leave']='transition ease-in-out-1 duration-300'

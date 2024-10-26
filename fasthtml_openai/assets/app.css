@@ -955,8 +955,16 @@ video {
   transition-duration: 300ms;
 }
 
+.duration-\[600ms\] {
+  transition-duration: 600ms;
+}
+
 .ease-in-out-1 {
   transition-timing-function: var(--ease-in-out-1);
+}
+
+.ease-spring-1 {
+  transition-timing-function: var(--ease-spring-1);
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
