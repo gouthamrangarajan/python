@@ -8,4 +8,4 @@ class UserChat(BaseModel):
     assistant:list[str]=[]
     
     def to_tuple(self):
-        return (self.sessionId, self.prompt, self.user, self.assistant)
+        return (self.sessionId, self.prompt, self.user, self.assistant)        

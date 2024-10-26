@@ -5,6 +5,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.store('prompts', {
         data,
         currentVal: '',
+        processsing: false,
         pushData(val) {
             this.data.push(val);
         },
@@ -13,22 +14,12 @@ document.addEventListener('alpine:init', () => {
         },
         setCurrentVal(val) {
             this.currentVal = val;
-        }
-    });
-    Alpine.store('processing', {
-        value: false,
-        addChat: false,
-        toggle() {
-            this.value = !this.value;
         },
-        toggleAddChat() {
-            this.addChat = !this.addChat;
+        completeProcessing() {
+            this.processing = false;
         },
-        complete() {
-            this.value = false;
-        },
-        completeAddChat() {
-            this.addChat = false;
+        toggleProcessing() {
+            this.processing = !this.processing;
         }
     });
     Alpine.store('showSessions', {
@@ -42,7 +33,7 @@ document.addEventListener('alpine:init', () => {
 function formBeforeSend(_, __) {
     Alpine.store('prompts').updateData(Alpine.store('prompts').data.length - 1, Alpine.store('prompts').currentVal);
     Alpine.store('prompts').pushData('');
-    Alpine.store('processing').toggle();
+    Alpine.store('prompts').toggleProcessing();
     Alpine.store('prompts').setCurrentVal('');
     const scrollEl = document.getElementById('scroll-div');
     scrollEl.scrollTop = scrollEl.scrollHeight;
@@ -52,11 +43,10 @@ function afterSwap(event, self) {
     if (event.detail.elt == document.getElementById('sessionId')
         && Alpine.store('showSessions').value
     ) {
-        Alpine.store('processing').completeAddChat();
         const els = document.getElementsByClassName("sessionLink");
         if (els.length > 0) {
             const href = els[els.length - 1].children[0].href
-            menuCloseClick(event, self);
+            Alpine.store('showSessions').toggle();
             setTimeout(() => {
                 if (!document.startViewTransition) {
                     document.location.href = href;
@@ -68,12 +58,21 @@ function afterSwap(event, self) {
         }
     }
     else {
-        Alpine.store('processing').complete();
+        Alpine.store('prompts').completeProcessing();
     }
+}
+
+function afterTitleEditSwap(_, self) {
+    if (self.children[0].children[0].nodeName === 'INPUT') {
+        const input = self.children[0].children[0];
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+    }
+    self._x_dataStack[0].processing = false;
 }
 function goToSession(event, self) {
     event.preventDefault();
-    menuCloseClick(event, self);
+    Alpine.store('showSessions').toggle();
     setTimeout(() => {
         if (!document.startViewTransition) {
             document.location.href = self.href;
@@ -89,7 +88,7 @@ function keyDown(event, self) {
         event.preventDefault();
     }
     else {
-        if (event.key === 'Enter' && !Alpine.store('processing').value
+        if (event.key === 'Enter' && !Alpine.store('prompts').processing
             && event.currentTarget.value.trim() != ''
             && !event.shiftKey
         ) {
@@ -102,29 +101,15 @@ function keyDown(event, self) {
 function submitBtnClick(event, self) {
     event.preventDefault();
     if (!Alpine.store('showSessions').value &&
-        !Alpine.store('processing').value && Alpine.store('prompts').currentVal.trim() != '') {
+        !Alpine.store('prompts').processing && Alpine.store('prompts').currentVal.trim() != '') {
         self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
     }
 }
 
-function menuOpenClick(event, _) {
-    event.preventDefault();
-    document.getElementById('menuContainer').classList.toggle('animate-slide-right');
-    document.getElementById('menuContainer').classList.toggle('animate-slide-right-opp');
-    Alpine.store('showSessions').toggle();
-}
-function menuCloseClick(event, _) {
-    event.preventDefault();
-    document.getElementById('menuContainer').classList.toggle('animate-slide-right');
-    document.getElementById('menuContainer').classList.toggle('animate-slide-right-opp');
-    setTimeout(() => {
-        Alpine.store('showSessions').toggle();
-    }, 300);
-}
 function addChatClick(event, self) {
     event.preventDefault();
-    if (!Alpine.store('processing').addChat) {
-        Alpine.store('processing').toggleAddChat();
+    if (!self._x_dataStack[0].processing) {
+        self._x_dataStack[0].processing = true;
         self.dispatchEvent(new Event("chat_new"));
     }
 }
@@ -139,5 +124,5 @@ function formError(_, self) {
     ul.appendChild(liUser);
     liAssistant.outerHTML = errorElAssistant;
     liUser.outerHTML = errorElUser;
-    Alpine.store('processing').toggle();
+    Alpine.store('prompts').toggleProcessing();
 }
