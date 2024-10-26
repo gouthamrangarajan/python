@@ -8,8 +8,8 @@ load_dotenv()
 TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
 TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
 
-conn = libsql.connect(database=TURSO_DATABASE_URL, auth_token=TURSO_AUTH_TOKEN)
-# conn.sync()
+conn = libsql.connect("local.db", sync_url=TURSO_DATABASE_URL, auth_token=TURSO_AUTH_TOKEN)
+conn.sync()
 
 def insert_user(id:str):
     conn.execute("INSERT INTO users (user_id, created_at) VALUES (?,?)",(id,datetime.now().timestamp()))
