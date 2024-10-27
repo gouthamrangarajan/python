@@ -70,7 +70,7 @@ def get(request:Request,session_id:int=0):
     return Response("UnAuthorized",status_code=401)
 
 @rt("/{session_id}/edit/title")
-def post(request:Request,session_id:int,title:str):     
+def post(request:Request,session_id:int,title:str):
     all_sessions=parse_cookie_and_get_user_sessions(request)   
     if(all_sessions is not None):        
         if(session_id!=0):

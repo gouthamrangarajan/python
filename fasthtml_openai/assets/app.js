@@ -93,6 +93,19 @@ function addNewChatError(_, self) {
     }
     self._x_dataStack[0].processing = false;
 }
+function titleEditError(_, self) {
+    if (!document.startViewTransition) {
+        Alpine.store('errors').value.push({ id: Alpine.store('errors').nextId, msg: 'Error editing chat title. Please try again later' });
+        Alpine.store('errors').nextId = Alpine.store('errors').nextId + 1;
+    }
+    else {
+        document.startViewTransition(() => {
+            Alpine.store('errors').value.push({ id: Alpine.store('errors').nextId, msg: 'Error editing chat title. Please try again later' });
+            Alpine.store('errors').nextId = Alpine.store('errors').nextId + 1;
+        });
+    }
+    self.parentElement._x_dataStack[0].processing = false;
+}
 function keyDown(event, self) {
     if (Alpine.store('showSessions').value) {
         event.preventDefault();

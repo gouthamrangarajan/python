@@ -135,8 +135,9 @@ def session_title_edit_button(session:dict):
                    Span(loader_span(1),loader_span(2),cls="flex gap-1",x_show="processing"),
            cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300  flex gap-1 items-center focus:ring-1 focus:ring-white hover:opacity-80",
            style=f'view-transition-name:session-title-action-{session[0]}', 
-           **alpine_click_binding,      
            hx_get=f'/{session[0]}/edit/title',hx_target="closest li",hx_swap="innerHTML transition:true",
+           hx_on_htmx_response_error="titleEditError(event,this)",
+           **alpine_click_binding,      
            )
 def first_li_session(session:dict):
     return Ul(li_session(session),
@@ -151,7 +152,8 @@ def form_edit_session_title(session:dict):
                  type="submit",style=f'view-transition-name:session-title-action-{session[0]}',
                  cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300  focus:ring-1 focus:ring-white hover:opacity-80"),
             cls="flex items-center flex-1 gap-1",hx_post=f'/{session[0]}/edit/title',hx_target="closest li",
-            hx_swap="outerHTML transition:true",**alpine_submit_binding
+            hx_swap="outerHTML transition:true",hx_on_htmx_response_error="titleEditError(event,this)",
+            **alpine_submit_binding
                 )
 def session_errors():
     alpine_bindings_template_key={}
