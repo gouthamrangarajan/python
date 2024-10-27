@@ -46,15 +46,7 @@ function afterSwap(event, self) {
         const els = document.getElementsByClassName("sessionLink");
         if (els.length > 0) {
             const href = els[els.length - 1].children[0].href
-            Alpine.store('showSessions').toggle();
-            setTimeout(() => {
-                if (!document.startViewTransition) {
-                    document.location.href = href;
-                }
-                else {
-                    document.startViewTransition(() => document.location.href = href);
-                }
-            }, 400);
+            goToSession(event, { href })
         }
     }
     else {
@@ -74,12 +66,7 @@ function goToSession(event, self) {
     event.preventDefault();
     Alpine.store('showSessions').toggle();
     setTimeout(() => {
-        if (!document.startViewTransition) {
-            document.location.href = self.href;
-        }
-        else {
-            document.startViewTransition(() => document.location.href = self.href);
-        }
+        document.location.href = self.href;
     }, 400);
 }
 

@@ -134,7 +134,7 @@ def session_title_edit_button(session:dict):
     alpine_click_binding={'x-on:click':'processing=true'}
     return  Button(I("edit",cls="material-icons",x_show="!processing"),
                    Span(loader_span(1),loader_span(2),cls="flex gap-1",x_show="processing"),
-           cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300 mt-2 flex gap-1 items-center focus:ring-1 focus:ring-white hover:opacity-80",
+           cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300  flex gap-1 items-center focus:ring-1 focus:ring-white hover:opacity-80",
            style=f'view-transition-name:session-title-action-{session[0]}', 
            **alpine_click_binding,      
            hx_get=f'/{session[0]}/edit/title',hx_target="closest li",hx_swap="innerHTML transition:true",
@@ -150,7 +150,7 @@ def form_edit_session_title(session:dict):
                  Button(I('check',cls="material-icons",x_show="!processing"),
                         Span(loader_span(1),loader_span(2),cls="flex gap-1",x_show="processing"),
                  type="submit",style=f'view-transition-name:session-title-action-{session[0]}',
-                 cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300 mt-2 focus:ring-1 focus:ring-white hover:opacity-80"),
+                 cls="outline-none appearance-none text-white p-1 rounded-full transition duration-300  focus:ring-1 focus:ring-white hover:opacity-80"),
             cls="flex items-center flex-1 gap-1",hx_post=f'/{session[0]}/edit/title',hx_target="closest li",
             hx_swap="outerHTML transition:true",**alpine_submit_binding
                 )
