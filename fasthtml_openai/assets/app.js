@@ -27,32 +27,22 @@ document.addEventListener('alpine:init', () => {
         toggle() {
             this.value = !this.value;
         }
-    })
-});
-
-function formBeforeSend(_, __) {
-    Alpine.store('prompts').updateData(Alpine.store('prompts').data.length - 1, Alpine.store('prompts').currentVal);
-    Alpine.store('prompts').pushData('');
-    Alpine.store('prompts').toggleProcessing();
-    Alpine.store('prompts').setCurrentVal('');
-    const scrollEl = document.getElementById('scroll-div');
-    scrollEl.scrollTop = scrollEl.scrollHeight;
-}
-
-function afterSwap(event, self) {
-    if (event.detail.elt == document.getElementById('sessionId')
-        && Alpine.store('showSessions').value
-    ) {
-        const els = document.getElementsByClassName("sessionLink");
-        if (els.length > 0) {
-            const href = els[els.length - 1].children[0].href
-            goToSession(event, { href })
+    });
+    Alpine.store('errors', {
+        value: [],
+        nextId: 1,
+        remove(errorId) {
+            if (!document.startViewTransition) {
+                this.value = this.value.filter(el => el.id != errorId);
+            }
+            else {
+                document.startViewTransition(async () => {
+                    this.value = this.value.filter(el => el.id != errorId);
+                });
+            }
         }
-    }
-    else {
-        Alpine.store('prompts').completeProcessing();
-    }
-}
+    });
+});
 
 function afterTitleEditSwap(_, self) {
     if (self.children[0].children[0].nodeName === 'INPUT') {
@@ -69,7 +59,40 @@ function goToSession(event, self) {
         document.location.href = self.href;
     }, 400);
 }
-
+function addChatClick(event, self) {
+    event.preventDefault();
+    if (!self._x_dataStack[0].processing) {
+        self._x_dataStack[0].processing = true;
+        self.dispatchEvent(new Event("chat_new"));
+    }
+}
+function afterSwap(event, self) {
+    if (event.detail.elt == document.getElementById('sessionId')
+        && Alpine.store('showSessions').value
+    ) {
+        const els = document.getElementsByClassName("sessionLink");
+        if (els.length > 0) {
+            const href = els[els.length - 1].children[0].href
+            goToSession(event, { href })
+        }
+    }
+    else {
+        Alpine.store('prompts').completeProcessing();
+    }
+}
+function addNewChatError(_, self) {
+    if (!document.startViewTransition) {
+        Alpine.store('errors').value.push({ id: Alpine.store('errors').nextId, msg: 'Error creating new chat. Please try again later' });
+        Alpine.store('errors').nextId = Alpine.store('errors').nextId + 1;
+    }
+    else {
+        document.startViewTransition(() => {
+            Alpine.store('errors').value.push({ id: Alpine.store('errors').nextId, msg: 'Error creating new chat. Please try again later' });
+            Alpine.store('errors').nextId = Alpine.store('errors').nextId + 1;
+        });
+    }
+    self._x_dataStack[0].processing = false;
+}
 function keyDown(event, self) {
     if (Alpine.store('showSessions').value) {
         event.preventDefault();
@@ -84,7 +107,6 @@ function keyDown(event, self) {
         }
     }
 }
-
 function submitBtnClick(event, self) {
     event.preventDefault();
     if (!Alpine.store('showSessions').value &&
@@ -92,13 +114,13 @@ function submitBtnClick(event, self) {
         self.dispatchEvent(new Event("chat_submit", { bubbles: true }));
     }
 }
-
-function addChatClick(event, self) {
-    event.preventDefault();
-    if (!self._x_dataStack[0].processing) {
-        self._x_dataStack[0].processing = true;
-        self.dispatchEvent(new Event("chat_new"));
-    }
+function formBeforeSend(_, __) {
+    Alpine.store('prompts').updateData(Alpine.store('prompts').data.length - 1, Alpine.store('prompts').currentVal);
+    Alpine.store('prompts').pushData('');
+    Alpine.store('prompts').toggleProcessing();
+    Alpine.store('prompts').setCurrentVal('');
+    const scrollEl = document.getElementById('scroll-div');
+    scrollEl.scrollTop = scrollEl.scrollHeight;
 }
 function formError(_, self) {
     const errorElAssistant = document.getElementById("errorTemplateAssistant").innerHTML;

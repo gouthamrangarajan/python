@@ -103,17 +103,16 @@ def sessions():
     alpine_background_transition_bindings['x-transition:leave-end']='opacity-0'
     
     alpine_close_button_click_bindings={'x-on:click':'$store.showSessions.toggle()'}
-    return Div(Div(Ul(Li(add_new_chat_button()),id="menu",hx_get="/sessions",hx_swap="beforeend",hx_trigger="load",cls="flex flex-col gap-1 items-center"),
-                id="menuContainer",cls="bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300  py-2 px-4 pt-10 lg:w-1/3",
-                **alpine_animation_transition_bindings,style="view-transition-name:sessions",x_show="$store.showSessions.value",
-                ),
+    return Div(Div(Ul(Li(add_new_chat_button()),id="menu",hx_get="/sessions",hx_swap="beforeend",hx_trigger="load",cls="flex flex-col gap-1 items-center"),session_errors(),                
+                cls="relative bg-slate-800 w-11/12 h-screen overflow-y-auto scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-red-300  py-2 px-4 pt-10 lg:w-1/3",
+                id="menuContainer",style="view-transition-name:sessions",**alpine_animation_transition_bindings,x_show="$store.showSessions.value",),
                Button(I("close",cls="material-icons"),cls="outline-none appearance-none text-red-600 p-1 rounded-full transition duration-300 mt-2 focus:ring-1 focus:ring-red-600 hover:opacity-80",
                **alpine_close_button_click_bindings),
             cls="absolute flex gap-1 items-start bg-black/50 w-screen h-screen text-white z-10",style="view-transition-name:session-menu-open-background",
             **alpine_background_transition_bindings,x_show="$store.showSessions.value",x_trap="$store.showSessions.value")
 def add_new_chat_button():               
     return Div(Button( Span(loader_span(1),loader_span(2),cls="flex gap-1 mr-1",x_show="processing"),
-                    I("add",cls="material-icons",x_show="!processing"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",
+                    I("add",cls="material-icons",x_show="!processing"),Span("New Chat"),hx_post="/chat/new",hx_target="#menu",hx_swap="beforeend",hx_trigger="chat_new",hx_on_htmx_response_error="addNewChatError(event,this)",
                 onClick="addChatClick(event,this)",cls="appearance-none outline-none cursor-pointer flex gap-1 items-center bg-slate-700 text-white py-2 px-4 rounded transition duration-300 focus:ring-1 focus:ring-white hover:opacity-80",
                 x_data="{processing:false}")
             ,cls="pb-8")
@@ -154,3 +153,18 @@ def form_edit_session_title(session:dict):
             cls="flex items-center flex-1 gap-1",hx_post=f'/{session[0]}/edit/title',hx_target="closest li",
             hx_swap="outerHTML transition:true",**alpine_submit_binding
                 )
+def session_errors():
+    alpine_bindings_template_key={}
+    alpine_bindings_template_key['x-bind:key']='error.id'
+    alpine_bindings_list_style={}
+    alpine_bindings_list_style['x-bind:style']='{"view-transition-name":"error-msg-"+error.id}'
+    alpine_bindings_remove_click={}
+    alpine_bindings_remove_click['x-on:click']='$store.errors.remove(error.id)'
+    templates=Template(Li(Span(x_text="error.msg",cls="flex-1"),
+                          Button("CLEAR",
+                          cls="outline-none appearance-none text-xs text-slate-600 bg-red-50 p-1 transition duration-300 focus:ring-1 focus:ring-red-50 focus:ring-offset-1 focus:ring-offset-red-600 hover:opacity-80",
+                          **alpine_bindings_remove_click),
+                        cls="bg-red-600 text-white rounded py-1 px-3 flex gap-2 items-center animate-error-msg",
+                        **alpine_bindings_list_style),
+               x_for="error in $store.errors.value",**alpine_bindings_template_key)
+    return Ul(templates,x_show="$store.errors.value.length>0", cls="absolute bottom-2 left-2 w-11/12 mx-auto items-center flex flex-col gap-1")
