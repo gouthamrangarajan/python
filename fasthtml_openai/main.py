@@ -106,11 +106,11 @@ def get(request:Request,session_id:int=0):
         Body(
             Main(sessions(),form(session_id,conversations)
                  ,cls="relative w-screen h-screen overflow-hidden",x_data="{}",x_cloak=True),
+            script_zero_md(),
             script_app(),    
             script_error_template(),       
             script_alpine(),            
             script_htmx(),
-            script_zero_md(),
             cls="bg-slate-800"
         )
     )
