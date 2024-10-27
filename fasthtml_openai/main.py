@@ -45,8 +45,8 @@ def script_error_template():
     
 def script_zero_md():
     # below does not work figure out why
-    # return Script(src="/assets/library/zero-md.min.js",type="module") 
-    return Script(src="https://cdn.jsdelivr.net/npm/zero-md@3?register",type="module")
+    return Script(src="/assets/library/zero-md.min.js?register",type="module") 
+    # return Script(src="https://cdn.jsdelivr.net/npm/zero-md@3?register",type="module")
 
 def script_app():
     return Script(src="/assets/app.js",type="text/javascript")
