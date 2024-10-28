@@ -57,7 +57,7 @@ def li_assistant(val:str="",animate:bool=True):
     elif(val=="Error. Try again."):
         return Li(P(val),Input(type="hidden",name="assistant",value=''),cls=f'flex gap-2 items-start w-full text-white p-1 origin-top {"animate-scale-y" if animate else ""}')
     
-    css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important; color: rgb(255 255 255) !important;} .markdown-body table{color:rgb(255 255 255) !important;}'), data_append=True)
+    css_template = Template(Style('.markdown-body {background-color: rgb(30 41 59) !important; color: rgb(255 255 255) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:rgb(255 255 255) !important;}}'), data_append=True)
     md_val=Zero_md(css_template, Script(val.replace("</script>","<\\/script>"), type="text/markdown"))
     # md_val=NotStr(f'''<zero-md><script type="text/markdown">{val}</script></zero-md>''')
     return Li(Img(src="/assets/openai.svg",cls="w-6 h-6 shrink-0"),
