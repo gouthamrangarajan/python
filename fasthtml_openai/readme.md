@@ -8,5 +8,6 @@
     - OPENAI_API_MODEL
     - TURSO_AUTH_TOKEN
     - TURSO_DATABASE_URL. Check [Turso docs](https://docs.turso.tech/sdk/python/quickstart) for further information
-![image](https://github.com/gouthamrangarajan/python/tree/main/fasthtml_openai/screenshot.png)
+
+![image](https://github.com/gouthamrangarajan/python/blob/main/fasthtml_openai/screenshot.png)
 
